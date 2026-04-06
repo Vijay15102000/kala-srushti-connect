@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLang } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface AuthModalProps {
 
 export default function AuthModal({ mode, onClose }: AuthModalProps) {
   const { t } = useLang();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -29,6 +31,11 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      // TODO: Replace with actual API call to your backend
+      // Your backend should return { id, email, role } after authentication
+      // For now, simulating: use "admin@admin.com" to get admin role
+      const role = email.toLowerCase() === 'admin@admin.com' ? 'admin' : 'user';
+      login({ id: Date.now().toString(), email, role });
       onClose();
     }
   };
@@ -73,6 +80,10 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
             <button type="submit" className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity font-body">
               {t('auth.submit')}
             </button>
+
+            <p className="text-xs text-muted-foreground text-center font-body">
+              Demo: use <strong>admin@admin.com</strong> to login as admin
+            </p>
           </form>
         </motion.div>
       </motion.div>

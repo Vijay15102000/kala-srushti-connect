@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NavbarProps {
@@ -10,6 +12,8 @@ interface NavbarProps {
 
 export default function Navbar({ onLogin, onSignup }: NavbarProps) {
   const { t, toggleLang } = useLang();
+  const { user, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -48,12 +52,29 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
             <button onClick={toggleLang} className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground transition-colors">
               {t('nav.langToggle')}
             </button>
-            <button onClick={onLogin} className="text-sm font-medium px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors">
-              {t('nav.login')}
-            </button>
-            <button onClick={onSignup} className="text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-              {t('nav.signup')}
-            </button>
+
+            {user ? (
+              <>
+                {isAdmin && (
+                  <button onClick={() => navigate('/admin')} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity flex items-center gap-1.5">
+                    <Shield size={14} /> Admin
+                  </button>
+                )}
+                <span className="text-sm text-muted-foreground font-body">{user.email}</span>
+                <button onClick={logout} className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={onLogin} className="text-sm font-medium px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors">
+                  {t('nav.login')}
+                </button>
+                <button onClick={onSignup} className="text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  {t('nav.signup')}
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -79,8 +100,23 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
               <button onClick={toggleLang} className="text-sm text-muted-foreground">
                 {t('nav.langToggle')}
               </button>
-              <button onClick={() => { onLogin(); setOpen(false); }} className="text-left font-medium">{t('nav.login')}</button>
-              <button onClick={() => { onSignup(); setOpen(false); }} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-center font-medium">{t('nav.signup')}</button>
+
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <button onClick={() => { navigate('/admin'); setOpen(false); }} className="text-left font-medium flex items-center gap-2 text-accent">
+                      <Shield size={16} /> Admin Dashboard
+                    </button>
+                  )}
+                  <span className="text-sm text-muted-foreground">{user.email}</span>
+                  <button onClick={() => { logout(); setOpen(false); }} className="text-left font-medium text-destructive">Logout</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => { onLogin(); setOpen(false); }} className="text-left font-medium">{t('nav.login')}</button>
+                  <button onClick={() => { onSignup(); setOpen(false); }} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-center font-medium">{t('nav.signup')}</button>
+                </>
+              )}
             </motion.div>
           </>
         )}
