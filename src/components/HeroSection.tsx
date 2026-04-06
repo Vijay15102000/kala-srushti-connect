@@ -11,7 +11,8 @@ export default function HeroSection() {
       <video
         autoPlay muted loop playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        src="https://videos.pexels.com/video-files/3296396/3296396-sd_640_360_25fps.mp4"
+        poster="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1280&q=80"
+        src="https://cdn.pixabay.com/video/2020/07/30/45735-446800773_large.mp4"
       />
       <div className="absolute inset-0 hero-overlay" />
 
