@@ -171,10 +171,11 @@ export default function AdminDashboard() {
             {showDishForm && (
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
                 <h3 className="font-heading font-semibold text-foreground">{editingDish ? 'Edit Dish' : 'Add New Dish'}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                   <input placeholder="Dish name" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                   <input placeholder="Region" value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                   <input placeholder="Type (e.g. Breakfast)" value={dishForm.type} onChange={e => setDishForm(p => ({ ...p, type: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Origin (e.g. Udupi, Karnataka)" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
