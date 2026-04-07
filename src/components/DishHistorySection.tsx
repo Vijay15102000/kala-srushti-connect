@@ -1,6 +1,7 @@
 import { useLang } from '@/contexts/LanguageContext';
 import { dishHistories } from '@/lib/data';
 import { motion } from 'framer-motion';
+import TextToSpeech from '@/components/TextToSpeech';
 
 export default function DishHistorySection() {
   const { t, lang } = useLang();
@@ -32,9 +33,9 @@ export default function DishHistorySection() {
               <div className="flex-1 space-y-3">
                 <h3 className="font-heading text-2xl font-bold text-foreground">{dish.name[lang]}</h3>
                 <p className="text-muted-foreground leading-relaxed font-body">{dish.story[lang]}</p>
+                <TextToSpeech text={`${dish.name[lang]}. ${dish.story[lang]}`} label="Listen to Story" />
               </div>
               <div className="flex-1 max-w-sm">
-                {/* Replace this image with your own */}
                 <img src={dish.image} alt={dish.name.en} className="rounded-xl shadow-lg w-full aspect-[4/3] object-cover hover:scale-[1.02] transition-transform duration-300" loading="lazy" />
               </div>
             </motion.div>

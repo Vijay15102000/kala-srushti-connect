@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLang } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -12,6 +13,7 @@ interface AuthModalProps {
 export default function AuthModal({ mode, onClose }: AuthModalProps) {
   const { t } = useLang();
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -32,11 +34,13 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
     e.preventDefault();
     if (validate()) {
       // TODO: Replace with actual API call to your backend
-      // Your backend should return { id, email, role } after authentication
-      // For now, simulating: use "admin@admin.com" to get admin role
       const role = email.toLowerCase() === 'admin@admin.com' ? 'admin' : 'user';
       login({ id: Date.now().toString(), email, role });
       onClose();
+      // Redirect admin to dashboard
+      if (role === 'admin') {
+        navigate('/admin');
+      }
     }
   };
 

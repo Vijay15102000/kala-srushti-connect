@@ -2,7 +2,9 @@ import { useState, useRef } from 'react';
 import { useLang } from '@/contexts/LanguageContext';
 import { recipes } from '@/lib/data';
 import { motion } from 'framer-motion';
-import { Search, Clock } from 'lucide-react';
+import { Search, Clock, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RecipesSection() {
   const { t, lang } = useLang();
@@ -59,6 +61,8 @@ export default function RecipesSection() {
 
 function RecipeCard({ recipe, index }: { recipe: typeof recipes[0]; index: number }) {
   const { lang } = useLang();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -72,6 +76,11 @@ function RecipeCard({ recipe, index }: { recipe: typeof recipes[0]; index: numbe
     if (videoRef.current) videoRef.current.currentTime = 0;
   };
 
+  const openOrigin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(recipe.origin)}`, '_blank');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -80,19 +89,25 @@ function RecipeCard({ recipe, index }: { recipe: typeof recipes[0]; index: numbe
       transition={{ delay: index * 0.05 }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
+      onClick={() => navigate(`/recipe/${recipe.id}`)}
       className="group rounded-xl overflow-hidden border border-border bg-card hover:shadow-xl transition-shadow duration-300 cursor-pointer"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
-        {/* Replace this image with your own */}
         <img src={recipe.image} alt={recipe.name.en} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? 'opacity-0' : 'opacity-100'}`} loading="lazy" />
-        {/* Replace this video with your own */}
         <video ref={videoRef} src={recipe.video} muted loop playsInline className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`} />
       </div>
-      <div className="p-4 flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-foreground">{recipe.name[lang]}</h3>
-        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock size={14} /> {recipe.time}
-        </span>
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-semibold text-foreground">{recipe.name[lang]}</h3>
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock size={14} /> {recipe.time}
+          </span>
+        </div>
+        {user && (
+          <button onClick={openOrigin} className="mt-2 flex items-center gap-1 text-xs text-primary hover:underline">
+            <MapPin size={12} /> Origin Place
+          </button>
+        )}
       </div>
     </motion.div>
   );
