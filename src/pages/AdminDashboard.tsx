@@ -11,6 +11,7 @@ interface DishItem {
   name: string;
   region: string;
   type: string;
+  origin: string;
 }
 
 interface PlaceItem {
