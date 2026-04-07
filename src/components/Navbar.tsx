@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield, Settings } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -31,26 +31,34 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
     setOpen(false);
   };
 
+  // When not scrolled (on dark hero), use white text
+  const textClass = scrolled ? 'text-foreground' : 'text-white';
+  const mutedTextClass = scrolled ? 'text-muted-foreground' : 'text-white/70';
+
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass-panel shadow-lg' : 'bg-transparent'}`}>
         <div className="container mx-auto flex items-center justify-between px-4 py-3 md:py-4">
-          <button onClick={() => scrollTo('home')} className="font-heading text-xl md:text-2xl font-bold tracking-tight text-foreground">
+          <button onClick={() => scrollTo('home')} className={`font-heading text-xl md:text-2xl font-bold tracking-tight ${textClass}`}>
             Karnataka <span className="text-gradient">Culinary</span>
           </button>
 
           {/* Desktop */}
           <div className="hidden md:flex items-center gap-6">
             {links.map(l => (
-              <button key={l} onClick={() => scrollTo(l)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors capitalize">
+              <button key={l} onClick={() => scrollTo(l)} className={`text-sm font-medium hover:text-primary transition-colors capitalize ${mutedTextClass}`}>
                 {t(`nav.${l}`)}
               </button>
             ))}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <button onClick={toggleLang} className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={toggleLang} className={`text-xs px-3 py-1.5 rounded-full border ${scrolled ? 'border-border text-muted-foreground hover:text-foreground' : 'border-white/30 text-white/70 hover:text-white'} transition-colors`}>
               {t('nav.langToggle')}
+            </button>
+
+            <button onClick={() => navigate('/settings')} className={`p-2 rounded-lg ${mutedTextClass} hover:text-primary transition-colors`}>
+              <Settings size={16} />
             </button>
 
             {user ? (
@@ -60,14 +68,14 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
                     <Shield size={14} /> Admin
                   </button>
                 )}
-                <span className="text-sm text-muted-foreground font-body">{user.email}</span>
-                <button onClick={logout} className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors">
+                <span className={`text-sm font-body ${mutedTextClass}`}>{user.email}</span>
+                <button onClick={logout} className={`text-sm font-medium px-4 py-2 rounded-lg border ${scrolled ? 'border-border text-foreground hover:bg-muted' : 'border-white/30 text-white hover:bg-white/10'} transition-colors`}>
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <button onClick={onLogin} className="text-sm font-medium px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors">
+                <button onClick={onLogin} className={`text-sm font-medium px-4 py-2 rounded-lg ${scrolled ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'} transition-colors`}>
                   {t('nav.login')}
                 </button>
                 <button onClick={onSignup} className="text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
@@ -78,7 +86,7 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
           </div>
 
           {/* Mobile toggle */}
-          <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-foreground">
+          <button onClick={() => setOpen(!open)} className={`md:hidden p-2 ${textClass}`}>
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -99,6 +107,10 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
               <hr className="border-border" />
               <button onClick={toggleLang} className="text-sm text-muted-foreground">
                 {t('nav.langToggle')}
+              </button>
+
+              <button onClick={() => { navigate('/settings'); setOpen(false); }} className="text-left font-medium flex items-center gap-2 text-muted-foreground">
+                <Settings size={16} /> Settings
               </button>
 
               {user ? (
