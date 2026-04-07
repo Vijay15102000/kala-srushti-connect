@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       // TODO: POST to your backend API
       setDishes(prev => [...prev, { id: Date.now().toString(), ...dishForm }]);
     }
-    setDishForm({ name: '', region: '', type: '' });
+    setDishForm({ name: '', region: '', type: '', origin: '' });
     setShowDishForm(false);
   };
 
