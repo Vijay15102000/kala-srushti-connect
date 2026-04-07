@@ -11,6 +11,7 @@ interface DishItem {
   name: string;
   region: string;
   type: string;
+  origin: string;
 }
 
 interface PlaceItem {
@@ -29,9 +30,9 @@ interface UserItem {
 
 // Placeholder data shown when no backend data
 const placeholderDishes: DishItem[] = [
-  { id: '1', name: 'Masala Dosa', region: 'Udupi', type: 'Breakfast' },
-  { id: '2', name: 'Bisi Bele Bath', region: 'Bangalore', type: 'Main Course' },
-  { id: '3', name: 'Mysore Pak', region: 'Mysore', type: 'Dessert' },
+  { id: '1', name: 'Masala Dosa', region: 'Udupi', type: 'Breakfast', origin: 'Udupi, Karnataka, India' },
+  { id: '2', name: 'Bisi Bele Bath', region: 'Bangalore', type: 'Main Course', origin: 'Mysore, Karnataka, India' },
+  { id: '3', name: 'Mysore Pak', region: 'Mysore', type: 'Dessert', origin: 'Mysore, Karnataka, India' },
 ];
 
 const placeholderPlaces: PlaceItem[] = [
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
   const [editingPlace, setEditingPlace] = useState<PlaceItem | null>(null);
 
   // Form states
-  const [dishForm, setDishForm] = useState({ name: '', region: '', type: '' });
+  const [dishForm, setDishForm] = useState({ name: '', region: '', type: '', origin: '' });
   const [placeForm, setPlaceForm] = useState({ name: '', location: '', type: '' });
 
   if (!user || !isAdmin) {
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
       // TODO: POST to your backend API
       setDishes(prev => [...prev, { id: Date.now().toString(), ...dishForm }]);
     }
-    setDishForm({ name: '', region: '', type: '' });
+    setDishForm({ name: '', region: '', type: '', origin: '' });
     setShowDishForm(false);
   };
 
@@ -162,7 +163,7 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="font-heading text-lg font-semibold text-foreground">Manage Dishes</h2>
-              <button onClick={() => { setEditingDish(null); setDishForm({ name: '', region: '', type: '' }); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
+              <button onClick={() => { setEditingDish(null); setDishForm({ name: '', region: '', type: '', origin: '' }); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
                 <Plus size={16} /> Add Dish
               </button>
             </div>
@@ -170,10 +171,11 @@ export default function AdminDashboard() {
             {showDishForm && (
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
                 <h3 className="font-heading font-semibold text-foreground">{editingDish ? 'Edit Dish' : 'Add New Dish'}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                   <input placeholder="Dish name" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                   <input placeholder="Region" value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                   <input placeholder="Type (e.g. Breakfast)" value={dishForm.type} onChange={e => setDishForm(p => ({ ...p, type: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Origin (e.g. Udupi, Karnataka)" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
@@ -189,6 +191,7 @@ export default function AdminDashboard() {
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Name</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Region</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Type</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Origin</th>
                     <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground font-body">Actions</th>
                   </tr>
                 </thead>
@@ -198,8 +201,9 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-sm text-foreground font-body">{d.name}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.region}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.type}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.origin}</td>
                       <td className="px-4 py-3 text-right space-x-2">
-                        <button onClick={() => { setEditingDish(d); setDishForm({ name: d.name, region: d.region, type: d.type }); setShowDishForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                        <button onClick={() => { setEditingDish(d); setDishForm({ name: d.name, region: d.region, type: d.type, origin: d.origin }); setShowDishForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                         <button onClick={() => deleteDish(d.id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
                       </td>
                     </tr>
