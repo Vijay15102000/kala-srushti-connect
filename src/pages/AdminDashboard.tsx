@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.region}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.type}</td>
                       <td className="px-4 py-3 text-right space-x-2">
-                        <button onClick={() => { setEditingDish(d); setDishForm({ name: d.name, region: d.region, type: d.type }); setShowDishForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                        <button onClick={() => { setEditingDish(d); setDishForm({ name: d.name, region: d.region, type: d.type, origin: d.origin }); setShowDishForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                         <button onClick={() => deleteDish(d.id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
                       </td>
                     </tr>
