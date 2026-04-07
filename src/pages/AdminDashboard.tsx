@@ -163,7 +163,7 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="font-heading text-lg font-semibold text-foreground">Manage Dishes</h2>
-              <button onClick={() => { setEditingDish(null); setDishForm({ name: '', region: '', type: '' }); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
+              <button onClick={() => { setEditingDish(null); setDishForm({ name: '', region: '', type: '', origin: '' }); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
                 <Plus size={16} /> Add Dish
               </button>
             </div>
