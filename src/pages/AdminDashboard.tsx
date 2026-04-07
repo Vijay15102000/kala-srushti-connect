@@ -30,9 +30,9 @@ interface UserItem {
 
 // Placeholder data shown when no backend data
 const placeholderDishes: DishItem[] = [
-  { id: '1', name: 'Masala Dosa', region: 'Udupi', type: 'Breakfast' },
-  { id: '2', name: 'Bisi Bele Bath', region: 'Bangalore', type: 'Main Course' },
-  { id: '3', name: 'Mysore Pak', region: 'Mysore', type: 'Dessert' },
+  { id: '1', name: 'Masala Dosa', region: 'Udupi', type: 'Breakfast', origin: 'Udupi, Karnataka, India' },
+  { id: '2', name: 'Bisi Bele Bath', region: 'Bangalore', type: 'Main Course', origin: 'Mysore, Karnataka, India' },
+  { id: '3', name: 'Mysore Pak', region: 'Mysore', type: 'Dessert', origin: 'Mysore, Karnataka, India' },
 ];
 
 const placeholderPlaces: PlaceItem[] = [
