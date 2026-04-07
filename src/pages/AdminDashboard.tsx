@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const [editingPlace, setEditingPlace] = useState<PlaceItem | null>(null);
 
   // Form states
-  const [dishForm, setDishForm] = useState({ name: '', region: '', type: '' });
+  const [dishForm, setDishForm] = useState({ name: '', region: '', type: '', origin: '' });
   const [placeForm, setPlaceForm] = useState({ name: '', location: '', type: '' });
 
   if (!user || !isAdmin) {
