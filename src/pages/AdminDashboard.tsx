@@ -191,6 +191,7 @@ export default function AdminDashboard() {
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Name</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Region</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Type</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Origin</th>
                     <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground font-body">Actions</th>
                   </tr>
                 </thead>
