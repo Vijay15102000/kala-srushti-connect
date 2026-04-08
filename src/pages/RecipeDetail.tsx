@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { recipes } from '@/lib/data';
 import { useLang } from '@/contexts/LanguageContext';
-import { LanguageProvider } from '@/contexts/LanguageContext';
+import { useRecipes } from '@/contexts/RecipesContext';
 import TextToSpeech from '@/components/TextToSpeech';
 import { ArrowLeft, MapPin, Clock, Play, Pause, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-function RecipeDetailContent() {
+export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, lang } = useLang();
-  const recipe = recipes.find(r => r.id === Number(id));
+  const { allRecipes } = useRecipes();
+  const recipe = allRecipes.find(r => r.id === Number(id));
 
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -39,7 +39,6 @@ function RecipeDetailContent() {
           if (prev <= 1) {
             clearInterval(intervalRef.current!);
             setTimerRunning(false);
-            // Check if last step
             if (recipe && activeStep === recipe.steps.length - 1) {
               speakMessage('Your dish is ready to eat! Enjoy your meal!');
             } else {
@@ -61,8 +60,12 @@ function RecipeDetailContent() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
-          <h1 className="font-heading text-2xl font-bold text-foreground">Recipe not found</h1>
-          <button onClick={() => navigate('/')} className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-body">Go Home</button>
+          <h1 className="font-heading text-2xl font-bold text-foreground">
+            {lang === 'kn' ? 'ಪಾಕವಿಧಾನ ಸಿಗಲಿಲ್ಲ' : 'Recipe not found'}
+          </h1>
+          <button onClick={() => navigate('/')} className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-body">
+            {lang === 'kn' ? 'ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ' : 'Go Home'}
+          </button>
         </div>
       </div>
     );
@@ -129,7 +132,7 @@ function RecipeDetailContent() {
                 </button>
               </div>
             </div>
-            <TextToSpeech text={`${recipe.name[lang]}. ${recipe.description[lang]}. ${allStepsText}`} label="Read Recipe" />
+            <TextToSpeech text={`${recipe.name[lang]}. ${recipe.description[lang]}. ${allStepsText}`} label={lang === 'kn' ? 'ಪಾಕವಿಧಾನ ಓದಿ' : 'Read Recipe'} />
           </div>
 
           {/* Description */}
@@ -137,34 +140,15 @@ function RecipeDetailContent() {
             <p className="text-muted-foreground leading-relaxed font-body">{recipe.description[lang]}</p>
           </div>
 
-          {/* Timer display */}
-          {activeStep !== null && timeLeft > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8 p-4 rounded-xl bg-primary/10 border border-primary/20 text-center"
-            >
-              <p className="text-sm text-primary font-medium mb-2">Step {activeStep + 1} Timer</p>
-              <p className="text-4xl font-bold text-primary font-heading">{formatTime(timeLeft)}</p>
-              <div className="flex gap-3 justify-center mt-3">
-                <button onClick={toggleTimer} className="p-2 rounded-full bg-primary text-primary-foreground">
-                  {timerRunning ? <Pause size={18} /> : <Play size={18} />}
-                </button>
-                <button onClick={resetTimer} className="p-2 rounded-full bg-muted text-muted-foreground">
-                  <RotateCcw size={18} />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
           {/* Steps */}
           <h2 className="font-heading text-xl font-bold text-foreground mb-4">
-            {lang === 'en' ? 'Step-by-Step Instructions' : 'ಹಂತ-ಹಂತದ ಸೂಚನೆಗಳು'}
+            {lang === 'kn' ? 'ಹಂತ-ಹಂತದ ಸೂಚನೆಗಳು' : 'Step-by-Step Instructions'}
           </h2>
           <div className="space-y-4">
             {recipe.steps.map((step, i) => {
               const isCompleted = completedSteps.has(i);
               const isActive = activeStep === i && timerRunning;
+              const isActiveTimer = activeStep === i && timeLeft > 0;
 
               return (
                 <motion.div
@@ -191,7 +175,7 @@ function RecipeDetailContent() {
                       <div className="flex flex-wrap items-center gap-3 mt-2">
                         {step.timeMinutes > 0 && (
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock size={12} /> {step.timeMinutes} min
+                            <Clock size={12} /> {step.timeMinutes} {lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}
                           </span>
                         )}
                         {!isCompleted && (
@@ -199,10 +183,25 @@ function RecipeDetailContent() {
                             onClick={() => startTimer(i)}
                             className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                           >
-                            {step.timeMinutes > 0 ? 'Start Timer' : 'Mark Done'}
+                            {step.timeMinutes > 0
+                              ? (lang === 'kn' ? 'ಟೈಮರ್ ಪ್ರಾರಂಭಿಸಿ' : 'Start Timer')
+                              : (lang === 'kn' ? 'ಮುಗಿದಿದೆ ಎಂದು ಗುರುತಿಸಿ' : 'Mark Done')}
                           </button>
                         )}
-                        <TextToSpeech text={step.instruction[lang]} label="Listen" />
+                        <TextToSpeech text={step.instruction[lang]} label={lang === 'kn' ? 'ಕೇಳಿ' : 'Listen'} />
+
+                        {/* Inline timer for this step */}
+                        {isActiveTimer && (
+                          <span className="inline-flex items-center gap-2 ml-auto text-sm text-primary font-bold">
+                            <span className="font-heading">{formatTime(timeLeft)}</span>
+                            <button onClick={toggleTimer} className="p-1 rounded-full bg-primary/10 hover:bg-primary/20">
+                              {timerRunning ? <Pause size={14} /> : <Play size={14} />}
+                            </button>
+                            <button onClick={resetTimer} className="p-1 rounded-full bg-muted hover:bg-muted/80">
+                              <RotateCcw size={14} />
+                            </button>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -213,13 +212,5 @@ function RecipeDetailContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function RecipeDetail() {
-  return (
-    <LanguageProvider>
-      <RecipeDetailContent />
-    </LanguageProvider>
   );
 }
