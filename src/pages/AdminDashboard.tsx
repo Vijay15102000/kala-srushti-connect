@@ -96,7 +96,10 @@ export default function AdminDashboard() {
   }
 
   const handleAddDish = () => {
-    if (!dishForm.name || !dishForm.region || !dishForm.foodType) return;
+    if (!dishForm.name) { toast.error('Please enter dish name'); return; }
+    if (!dishForm.region) { toast.error('Please select a region'); return; }
+    if (!dishForm.foodType) { toast.error('Please select veg or non-veg'); return; }
+    if (dishForm.steps.length === 0 || !dishForm.steps[0].instructionEn) { toast.error('Please add at least one step'); return; }
     const newRecipe: Recipe = {
       id: Date.now(),
       name: { en: dishForm.name, kn: dishForm.nameKn || dishForm.name },
@@ -106,14 +109,15 @@ export default function AdminDashboard() {
       category: dishForm.foodType as Recipe['category'],
       origin: dishForm.origin || 'Karnataka, India',
       description: { en: dishForm.description || dishForm.name, kn: dishForm.descriptionKn || dishForm.nameKn || dishForm.name },
-      steps: [
-        { instruction: { en: 'Prepare the ingredients', kn: 'ಪದಾರ್ಥಗಳನ್ನು ತಯಾರಿಸಿ' }, timeMinutes: 5 },
-        { instruction: { en: 'Cook and serve', kn: 'ಬೇಯಿಸಿ ಮತ್ತು ಬಡಿಸಿ' }, timeMinutes: 10 },
-      ],
+      steps: dishForm.steps.filter(s => s.instructionEn).map(s => ({
+        instruction: { en: s.instructionEn, kn: s.instructionKn || s.instructionEn },
+        timeMinutes: s.timeMinutes || 5,
+      })),
     };
     addRecipe(newRecipe);
     setDishForm(emptyDishForm);
     setShowDishForm(false);
+    toast.success('Dish added successfully!');
   };
 
   const handleAddPlace = () => {
