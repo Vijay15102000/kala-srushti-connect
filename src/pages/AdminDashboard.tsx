@@ -204,6 +204,31 @@ export default function AdminDashboard() {
                   <input placeholder="Description (English)" value={dishForm.description} onChange={e => setDishForm(p => ({ ...p, description: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                   <input placeholder="Description (Kannada)" value={dishForm.descriptionKn} onChange={e => setDishForm(p => ({ ...p, descriptionKn: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                 </div>
+                {/* Steps Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-body text-sm font-medium text-foreground">Recipe Steps</h4>
+                    <button type="button" onClick={() => setDishForm(p => ({ ...p, steps: [...p.steps, { ...emptyStep }] }))} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
+                      <Plus size={12} /> Add Step
+                    </button>
+                  </div>
+                  {dishForm.steps.map((step, i) => (
+                    <div key={i} className="flex gap-2 items-start bg-muted/50 rounded-lg p-2">
+                      <span className="text-xs font-medium text-muted-foreground mt-2 min-w-[24px]">{i + 1}.</span>
+                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <input placeholder={`Step ${i + 1} (English)`} value={step.instructionEn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionEn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className="px-3 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm" />
+                        <input placeholder={`Step ${i + 1} (Kannada)`} value={step.instructionKn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionKn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className="px-3 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm" />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <input type="number" min={1} placeholder="Min" value={step.timeMinutes} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], timeMinutes: Number(e.target.value) }; setDishForm(p => ({ ...p, steps })); }} className="w-16 px-2 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm text-center" />
+                        <span className="text-xs text-muted-foreground">min</span>
+                      </div>
+                      {dishForm.steps.length > 1 && (
+                        <button type="button" onClick={() => setDishForm(p => ({ ...p, steps: p.steps.filter((_, j) => j !== i) }))} className="mt-1 text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <div className="flex gap-2">
                   <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
                   <button onClick={() => setShowDishForm(false)} className="px-4 py-2 border border-border rounded-lg text-sm font-body text-muted-foreground">Cancel</button>
