@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { LanguageProvider } from '@/contexts/LanguageContext';
 import ScrollProgress from '@/components/ScrollProgress';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -14,7 +13,7 @@ export default function Index() {
   const [authMode, setAuthMode] = useState<'login' | 'signup' | null>(null);
 
   return (
-    <LanguageProvider>
+    <>
       <ScrollProgress />
       <Navbar onLogin={() => setAuthMode('login')} onSignup={() => setAuthMode('signup')} />
       <main>
@@ -26,6 +25,6 @@ export default function Index() {
       </main>
       <Footer />
       <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
-    </LanguageProvider>
+    </>
   );
 }

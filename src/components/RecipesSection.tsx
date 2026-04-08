@@ -1,17 +1,19 @@
 import { useState, useRef } from 'react';
 import { useLang } from '@/contexts/LanguageContext';
-import { recipes } from '@/lib/data';
+import { useRecipes } from '@/contexts/RecipesContext';
 import { motion } from 'framer-motion';
 import { Search, Clock, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Recipe } from '@/lib/data';
 
 export default function RecipesSection() {
   const { t, lang } = useLang();
+  const { allRecipes } = useRecipes();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
 
-  const filtered = recipes.filter(r => {
+  const filtered = allRecipes.filter(r => {
     const matchSearch = r.name[lang].toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'all' || r.category === filter;
     return matchSearch && matchFilter;
@@ -59,7 +61,7 @@ export default function RecipesSection() {
   );
 }
 
-function RecipeCard({ recipe, index }: { recipe: typeof recipes[0]; index: number }) {
+function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
   const { lang } = useLang();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -105,7 +107,7 @@ function RecipeCard({ recipe, index }: { recipe: typeof recipes[0]; index: numbe
         </div>
         {user && (
           <button onClick={openOrigin} className="mt-2 flex items-center gap-1 text-xs text-primary hover:underline">
-            <MapPin size={12} /> Origin Place
+            <MapPin size={12} /> {lang === 'kn' ? 'ಮೂಲ ಸ್ಥಳ' : 'Origin Place'}
           </button>
         )}
       </div>

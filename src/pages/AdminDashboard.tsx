@@ -1,18 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useLang } from '@/contexts/LanguageContext';
+import { useRecipes } from '@/contexts/RecipesContext';
 import { Users, UtensilsCrossed, MapPin, LogOut, Plus, Pencil, Trash2 } from 'lucide-react';
+import type { Recipe, RecipeStep } from '@/lib/data';
 
 type Tab = 'users' | 'dishes' | 'places';
-
-interface DishItem {
-  id: string;
-  name: string;
-  region: string;
-  type: string;
-  origin: string;
-}
 
 interface PlaceItem {
   id: string;
@@ -28,11 +21,16 @@ interface UserItem {
   createdAt: string;
 }
 
-// Placeholder data shown when no backend data
-const placeholderDishes: DishItem[] = [
-  { id: '1', name: 'Masala Dosa', region: 'Udupi', type: 'Breakfast', origin: 'Udupi, Karnataka, India' },
-  { id: '2', name: 'Bisi Bele Bath', region: 'Bangalore', type: 'Main Course', origin: 'Mysore, Karnataka, India' },
-  { id: '3', name: 'Mysore Pak', region: 'Mysore', type: 'Dessert', origin: 'Mysore, Karnataka, India' },
+const REGIONS = [
+  { value: 'coastal', label: 'Coastal Karnataka Food' },
+  { value: 'central', label: 'Central Karnataka Food' },
+  { value: 'north', label: 'North Karnataka Food' },
+  { value: 'south', label: 'South Karnataka Food' },
+];
+
+const FOOD_TYPES = [
+  { value: 'veg', label: 'Vegetarian' },
+  { value: 'nonveg', label: 'Non-Vegetarian' },
 ];
 
 const placeholderPlaces: PlaceItem[] = [
@@ -46,24 +44,34 @@ const placeholderUsers: UserItem[] = [
   { id: '2', email: 'user@example.com', role: 'user', createdAt: '2025-03-15' },
 ];
 
+interface DishForm {
+  name: string;
+  nameKn: string;
+  region: string;
+  foodType: string;
+  origin: string;
+  description: string;
+  descriptionKn: string;
+  time: string;
+  image: string;
+}
+
+const emptyDishForm: DishForm = { name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '', time: '', image: '' };
+
 export default function AdminDashboard() {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { allRecipes, addRecipe, removeRecipe } = useRecipes();
   const [tab, setTab] = useState<Tab>('dishes');
 
-  // TODO: Replace with API calls to your backend
-  const [dishes, setDishes] = useState<DishItem[]>(placeholderDishes);
   const [places, setPlaces] = useState<PlaceItem[]>(placeholderPlaces);
   const [users] = useState<UserItem[]>(placeholderUsers);
 
-  // Modal states
   const [showDishForm, setShowDishForm] = useState(false);
   const [showPlaceForm, setShowPlaceForm] = useState(false);
-  const [editingDish, setEditingDish] = useState<DishItem | null>(null);
   const [editingPlace, setEditingPlace] = useState<PlaceItem | null>(null);
 
-  // Form states
-  const [dishForm, setDishForm] = useState({ name: '', region: '', type: '', origin: '' });
+  const [dishForm, setDishForm] = useState<DishForm>(emptyDishForm);
   const [placeForm, setPlaceForm] = useState({ name: '', location: '', type: '' });
 
   if (!user || !isAdmin) {
@@ -72,24 +80,30 @@ export default function AdminDashboard() {
         <div className="text-center space-y-4">
           <h1 className="font-heading text-2xl font-bold text-foreground">Access Denied</h1>
           <p className="text-muted-foreground font-body">You need admin privileges to view this page.</p>
-          <button onClick={() => navigate('/')} className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-body">
-            Go Home
-          </button>
+          <button onClick={() => navigate('/')} className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-body">Go Home</button>
         </div>
       </div>
     );
   }
 
   const handleAddDish = () => {
-    if (!dishForm.name) return;
-    if (editingDish) {
-      setDishes(prev => prev.map(d => d.id === editingDish.id ? { ...d, ...dishForm } : d));
-      setEditingDish(null);
-    } else {
-      // TODO: POST to your backend API
-      setDishes(prev => [...prev, { id: Date.now().toString(), ...dishForm }]);
-    }
-    setDishForm({ name: '', region: '', type: '', origin: '' });
+    if (!dishForm.name || !dishForm.region || !dishForm.foodType) return;
+    const newRecipe: Recipe = {
+      id: Date.now(),
+      name: { en: dishForm.name, kn: dishForm.nameKn || dishForm.name },
+      time: dishForm.time || '30 min',
+      image: dishForm.image || 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600',
+      video: 'https://videos.pexels.com/video-files/5765071/5765071-sd_640_360_25fps.mp4',
+      category: dishForm.foodType as Recipe['category'],
+      origin: dishForm.origin || 'Karnataka, India',
+      description: { en: dishForm.description || dishForm.name, kn: dishForm.descriptionKn || dishForm.nameKn || dishForm.name },
+      steps: [
+        { instruction: { en: 'Prepare the ingredients', kn: 'ಪದಾರ್ಥಗಳನ್ನು ತಯಾರಿಸಿ' }, timeMinutes: 5 },
+        { instruction: { en: 'Cook and serve', kn: 'ಬೇಯಿಸಿ ಮತ್ತು ಬಡಿಸಿ' }, timeMinutes: 10 },
+      ],
+    };
+    addRecipe(newRecipe);
+    setDishForm(emptyDishForm);
     setShowDishForm(false);
   };
 
@@ -99,22 +113,13 @@ export default function AdminDashboard() {
       setPlaces(prev => prev.map(p => p.id === editingPlace.id ? { ...p, ...placeForm } : p));
       setEditingPlace(null);
     } else {
-      // TODO: POST to your backend API
       setPlaces(prev => [...prev, { id: Date.now().toString(), ...placeForm }]);
     }
     setPlaceForm({ name: '', location: '', type: '' });
     setShowPlaceForm(false);
   };
 
-  const deleteDish = (id: string) => {
-    // TODO: DELETE from your backend API
-    setDishes(prev => prev.filter(d => d.id !== id));
-  };
-
-  const deletePlace = (id: string) => {
-    // TODO: DELETE from your backend API
-    setPlaces(prev => prev.filter(p => p.id !== id));
-  };
+  const deletePlace = (id: string) => setPlaces(prev => prev.filter(p => p.id !== id));
 
   const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
     { key: 'dishes', label: 'Dishes', icon: UtensilsCrossed },
@@ -124,7 +129,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="bg-card border-b border-border px-4 py-4">
         <div className="container mx-auto flex items-center justify-between">
           <div>
@@ -132,9 +136,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground font-body">{user.email}</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => navigate('/')} className="text-sm px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors font-body">
-              Back to Site
-            </button>
+            <button onClick={() => navigate('/')} className="text-sm px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors font-body">Back to Site</button>
             <button onClick={() => { logout(); navigate('/'); }} className="text-sm px-4 py-2 rounded-lg bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity font-body flex items-center gap-2">
               <LogOut size={16} /> Logout
             </button>
@@ -143,7 +145,6 @@ export default function AdminDashboard() {
       </header>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Tabs */}
         <div className="flex gap-2 mb-6">
           {tabs.map(t => (
             <button
@@ -163,23 +164,36 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="font-heading text-lg font-semibold text-foreground">Manage Dishes</h2>
-              <button onClick={() => { setEditingDish(null); setDishForm({ name: '', region: '', type: '', origin: '' }); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
+              <button onClick={() => { setDishForm(emptyDishForm); setShowDishForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-body hover:opacity-90">
                 <Plus size={16} /> Add Dish
               </button>
             </div>
 
             {showDishForm && (
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-                <h3 className="font-heading font-semibold text-foreground">{editingDish ? 'Edit Dish' : 'Add New Dish'}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <input placeholder="Dish name" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Region" value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Type (e.g. Breakfast)" value={dishForm.type} onChange={e => setDishForm(p => ({ ...p, type: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Origin (e.g. Udupi, Karnataka)" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                <h3 className="font-heading font-semibold text-foreground">Add New Dish</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input placeholder="Dish name (English)" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Dish name (Kannada)" value={dishForm.nameKn} onChange={e => setDishForm(p => ({ ...p, nameKn: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <select value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm">
+                    <option value="">Select Region</option>
+                    {REGIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                  </select>
+                  {dishForm.region && (
+                    <select value={dishForm.foodType} onChange={e => setDishForm(p => ({ ...p, foodType: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm">
+                      <option value="">Veg or Non-Veg?</option>
+                      {FOOD_TYPES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                    </select>
+                  )}
+                  <input placeholder="Origin place (e.g. Udupi, Karnataka)" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Cooking time (e.g. 30 min)" value={dishForm.time} onChange={e => setDishForm(p => ({ ...p, time: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Image URL (optional)" value={dishForm.image} onChange={e => setDishForm(p => ({ ...p, image: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm col-span-full" />
+                  <input placeholder="Description (English)" value={dishForm.description} onChange={e => setDishForm(p => ({ ...p, description: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Description (Kannada)" value={dishForm.descriptionKn} onChange={e => setDishForm(p => ({ ...p, descriptionKn: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
-                  <button onClick={() => { setShowDishForm(false); setEditingDish(null); }} className="px-4 py-2 border border-border rounded-lg text-sm font-body text-muted-foreground">Cancel</button>
+                  <button onClick={() => setShowDishForm(false)} className="px-4 py-2 border border-border rounded-lg text-sm font-body text-muted-foreground">Cancel</button>
                 </div>
               </div>
             )}
@@ -189,22 +203,19 @@ export default function AdminDashboard() {
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Name</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Region</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Type</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Category</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Origin</th>
                     <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground font-body">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dishes.map(d => (
+                  {allRecipes.map(d => (
                     <tr key={d.id} className="border-t border-border">
-                      <td className="px-4 py-3 text-sm text-foreground font-body">{d.name}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.region}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.type}</td>
+                      <td className="px-4 py-3 text-sm text-foreground font-body">{d.name.en}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground font-body capitalize">{d.category}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{d.origin}</td>
-                      <td className="px-4 py-3 text-right space-x-2">
-                        <button onClick={() => { setEditingDish(d); setDishForm({ name: d.name, region: d.region, type: d.type, origin: d.origin }); setShowDishForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
-                        <button onClick={() => deleteDish(d.id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => removeRecipe(d.id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   ))}
@@ -223,7 +234,6 @@ export default function AdminDashboard() {
                 <Plus size={16} /> Add Place
               </button>
             </div>
-
             {showPlaceForm && (
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
                 <h3 className="font-heading font-semibold text-foreground">{editingPlace ? 'Edit Place' : 'Add New Place'}</h3>
@@ -238,7 +248,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
-
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
