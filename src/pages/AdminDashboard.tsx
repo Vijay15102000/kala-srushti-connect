@@ -44,6 +44,12 @@ const placeholderUsers: UserItem[] = [
   { id: '2', email: 'user@example.com', role: 'user', createdAt: '2025-03-15' },
 ];
 
+interface StepForm {
+  instructionEn: string;
+  instructionKn: string;
+  timeMinutes: number;
+}
+
 interface DishForm {
   name: string;
   nameKn: string;
@@ -54,9 +60,11 @@ interface DishForm {
   descriptionKn: string;
   time: string;
   image: string;
+  steps: StepForm[];
 }
 
-const emptyDishForm: DishForm = { name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '', time: '', image: '' };
+const emptyStep: StepForm = { instructionEn: '', instructionKn: '', timeMinutes: 5 };
+const emptyDishForm: DishForm = { name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '', time: '', image: '', steps: [{ ...emptyStep }] };
 
 export default function AdminDashboard() {
   const { user, logout, isAdmin } = useAuth();
