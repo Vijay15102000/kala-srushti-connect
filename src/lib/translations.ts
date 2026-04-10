@@ -8,6 +8,7 @@ export const translations: Record<string, Record<Language, string>> = {
   'nav.places': { en: 'Places', kn: 'ಸ್ಥಳಗಳು' },
   'nav.login': { en: 'Login', kn: 'ಲಾಗಿನ್' },
   'nav.signup': { en: 'Sign Up', kn: 'ಸೈನ್ ಅಪ್' },
+  'nav.myRecipes': { en: 'My Recipes', kn: 'ನನ್ನ ಪಾಕವಿಧಾನಗಳು' },
   'nav.langToggle': { en: 'ಕನ್ನಡಕ್ಕಾಗಿ ಇಲ್ಲಿ ಒತ್ತಿರಿ', kn: 'For English click here' },
 
   // Hero

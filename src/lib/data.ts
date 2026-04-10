@@ -3,6 +3,12 @@ export interface RecipeStep {
   timeMinutes: number;
 }
 
+export interface Ingredient {
+  name: { en: string; kn: string };
+  ratio: number;
+  unit: 'kg' | 'cups'; // kg for solids, cups (200ml) for liquids
+}
+
 export interface Recipe {
   id: number;
   name: { en: string; kn: string };
@@ -10,9 +16,10 @@ export interface Recipe {
   image: string;
   video: string;
   category: 'veg' | 'nonveg' | 'coastal';
-  origin: string; // location name for Google Maps
+  origin: string;
   description: { en: string; kn: string };
   steps: RecipeStep[];
+  ingredients?: Ingredient[];
 }
 
 export const recipes: Recipe[] = [
