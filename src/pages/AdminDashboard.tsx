@@ -3,24 +3,13 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/contexts/RecipesContext';
-import { Users, UtensilsCrossed, MapPin, LogOut, Plus, Pencil, Trash2 } from 'lucide-react';
-import type { Recipe, RecipeStep } from '@/lib/data';
+import { Users, UtensilsCrossed, MapPin, LogOut, Plus, Trash2 } from 'lucide-react';
+import type { Recipe, RecipeStep, Ingredient } from '@/lib/data';
 
 type Tab = 'users' | 'dishes' | 'places';
 
-interface PlaceItem {
-  id: string;
-  name: string;
-  location: string;
-  type: string;
-}
-
-interface UserItem {
-  id: string;
-  email: string;
-  role: string;
-  createdAt: string;
-}
+interface PlaceItem { id: string; name: string; location: string; type: string; }
+interface UserItem { id: string; email: string; role: string; createdAt: string; }
 
 const REGIONS = [
   { value: 'coastal', label: 'Coastal Karnataka Food' },
@@ -45,27 +34,23 @@ const placeholderUsers: UserItem[] = [
   { id: '2', email: 'user@example.com', role: 'user', createdAt: '2025-03-15' },
 ];
 
-interface StepForm {
-  instructionEn: string;
-  instructionKn: string;
-  timeMinutes: number;
-}
+interface StepForm { instructionEn: string; instructionKn: string; timeMinutes: number; }
+interface IngredientForm { nameEn: string; nameKn: string; ratio: number; unit: 'kg' | 'cups'; }
 
 interface DishForm {
-  name: string;
-  nameKn: string;
-  region: string;
-  foodType: string;
-  origin: string;
-  description: string;
-  descriptionKn: string;
-  time: string;
-  image: string;
+  name: string; nameKn: string; region: string; foodType: string;
+  origin: string; description: string; descriptionKn: string;
+  time: string; image: string;
   steps: StepForm[];
+  ingredients: IngredientForm[];
 }
 
 const emptyStep: StepForm = { instructionEn: '', instructionKn: '', timeMinutes: 5 };
-const emptyDishForm: DishForm = { name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '', time: '', image: '', steps: [{ ...emptyStep }] };
+const emptyIngredient: IngredientForm = { nameEn: '', nameKn: '', ratio: 1, unit: 'kg' };
+const emptyDishForm: DishForm = {
+  name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '',
+  time: '', image: '', steps: [{ ...emptyStep }], ingredients: [{ ...emptyIngredient }],
+};
 
 export default function AdminDashboard() {
   const { user, logout, isAdmin } = useAuth();
@@ -100,6 +85,7 @@ export default function AdminDashboard() {
     if (!dishForm.region) { toast.error('Please select a region'); return; }
     if (!dishForm.foodType) { toast.error('Please select veg or non-veg'); return; }
     if (dishForm.steps.length === 0 || !dishForm.steps[0].instructionEn) { toast.error('Please add at least one step'); return; }
+
     const newRecipe: Recipe = {
       id: Date.now(),
       name: { en: dishForm.name, kn: dishForm.nameKn || dishForm.name },
@@ -112,6 +98,11 @@ export default function AdminDashboard() {
       steps: dishForm.steps.filter(s => s.instructionEn).map(s => ({
         instruction: { en: s.instructionEn, kn: s.instructionKn || s.instructionEn },
         timeMinutes: s.timeMinutes || 5,
+      })),
+      ingredients: dishForm.ingredients.filter(ing => ing.nameEn).map(ing => ({
+        name: { en: ing.nameEn, kn: ing.nameKn || ing.nameEn },
+        ratio: ing.ratio,
+        unit: ing.unit,
       })),
     };
     addRecipe(newRecipe);
@@ -140,6 +131,8 @@ export default function AdminDashboard() {
     { key: 'users', label: 'Users', icon: Users },
   ];
 
+  const inputClass = "px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm";
+
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b border-border px-4 py-4">
@@ -160,19 +153,12 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-2 mb-6">
           {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-body text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground border border-border'
-              }`}
-            >
+            <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-body text-sm font-medium transition-colors ${tab === t.key ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground border border-border'}`}>
               <t.icon size={16} /> {t.label}
             </button>
           ))}
         </div>
 
-        {/* Dishes Tab */}
         {tab === 'dishes' && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -183,27 +169,53 @@ export default function AdminDashboard() {
             </div>
 
             {showDishForm && (
-              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+              <div className="bg-card border border-border rounded-xl p-4 space-y-4">
                 <h3 className="font-heading font-semibold text-foreground">Add New Dish</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input placeholder="Dish name (English)" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Dish name (Kannada)" value={dishForm.nameKn} onChange={e => setDishForm(p => ({ ...p, nameKn: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <select value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm">
+                  <input placeholder="Dish name (English)" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className={inputClass} />
+                  <input placeholder="Dish name (Kannada)" value={dishForm.nameKn} onChange={e => setDishForm(p => ({ ...p, nameKn: e.target.value }))} className={inputClass} />
+                  <select value={dishForm.region} onChange={e => setDishForm(p => ({ ...p, region: e.target.value }))} className={inputClass}>
                     <option value="">Select Region</option>
                     {REGIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                   </select>
                   {dishForm.region && (
-                    <select value={dishForm.foodType} onChange={e => setDishForm(p => ({ ...p, foodType: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm">
+                    <select value={dishForm.foodType} onChange={e => setDishForm(p => ({ ...p, foodType: e.target.value }))} className={inputClass}>
                       <option value="">Veg or Non-Veg?</option>
                       {FOOD_TYPES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                     </select>
                   )}
-                  <input placeholder="Origin place (e.g. Udupi, Karnataka)" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Cooking time (e.g. 30 min)" value={dishForm.time} onChange={e => setDishForm(p => ({ ...p, time: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Image URL (optional)" value={dishForm.image} onChange={e => setDishForm(p => ({ ...p, image: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm col-span-full" />
-                  <input placeholder="Description (English)" value={dishForm.description} onChange={e => setDishForm(p => ({ ...p, description: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Description (Kannada)" value={dishForm.descriptionKn} onChange={e => setDishForm(p => ({ ...p, descriptionKn: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Origin place" value={dishForm.origin} onChange={e => setDishForm(p => ({ ...p, origin: e.target.value }))} className={inputClass} />
+                  <input placeholder="Cooking time (e.g. 30 min)" value={dishForm.time} onChange={e => setDishForm(p => ({ ...p, time: e.target.value }))} className={inputClass} />
+                  <input placeholder="Image URL (optional)" value={dishForm.image} onChange={e => setDishForm(p => ({ ...p, image: e.target.value }))} className={`${inputClass} col-span-full`} />
+                  <input placeholder="Description (English)" value={dishForm.description} onChange={e => setDishForm(p => ({ ...p, description: e.target.value }))} className={inputClass} />
+                  <input placeholder="Description (Kannada)" value={dishForm.descriptionKn} onChange={e => setDishForm(p => ({ ...p, descriptionKn: e.target.value }))} className={inputClass} />
                 </div>
+
+                {/* Ingredients Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-body text-sm font-medium text-foreground">Ingredient Ratios (e.g. Rice 3 : Dal 1 : Water 6 cups)</h4>
+                    <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: [...p.ingredients, { ...emptyIngredient }] }))} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
+                      <Plus size={12} /> Add Ingredient
+                    </button>
+                  </div>
+                  {dishForm.ingredients.map((ing, i) => (
+                    <div key={i} className="flex gap-2 items-center bg-muted/50 rounded-lg p-2">
+                      <span className="text-xs font-medium text-muted-foreground min-w-[20px]">{i + 1}.</span>
+                      <input placeholder="Name (EN)" value={ing.nameEn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameEn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
+                      <input placeholder="Name (KN)" value={ing.nameKn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameKn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
+                      <input type="number" min={0.1} step={0.1} placeholder="Ratio" value={ing.ratio} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], ratio: Number(e.target.value) }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} w-20 text-center`} />
+                      <select value={ing.unit} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], unit: e.target.value as 'kg' | 'cups' }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} w-24`}>
+                        <option value="kg">kg</option>
+                        <option value="cups">cups (200ml)</option>
+                      </select>
+                      {dishForm.ingredients.length > 1 && (
+                        <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: p.ingredients.filter((_, j) => j !== i) }))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
                 {/* Steps Section */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -216,11 +228,11 @@ export default function AdminDashboard() {
                     <div key={i} className="flex gap-2 items-start bg-muted/50 rounded-lg p-2">
                       <span className="text-xs font-medium text-muted-foreground mt-2 min-w-[24px]">{i + 1}.</span>
                       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <input placeholder={`Step ${i + 1} (English)`} value={step.instructionEn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionEn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className="px-3 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm" />
-                        <input placeholder={`Step ${i + 1} (Kannada)`} value={step.instructionKn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionKn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className="px-3 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm" />
+                        <input placeholder={`Step ${i + 1} (English)`} value={step.instructionEn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionEn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className={inputClass} />
+                        <input placeholder={`Step ${i + 1} (Kannada)`} value={step.instructionKn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionKn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className={inputClass} />
                       </div>
                       <div className="flex items-center gap-1">
-                        <input type="number" min={1} placeholder="Min" value={step.timeMinutes} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], timeMinutes: Number(e.target.value) }; setDishForm(p => ({ ...p, steps })); }} className="w-16 px-2 py-1.5 rounded border border-border bg-background text-foreground font-body text-sm text-center" />
+                        <input type="number" min={1} placeholder="Min" value={step.timeMinutes} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], timeMinutes: Number(e.target.value) }; setDishForm(p => ({ ...p, steps })); }} className={`${inputClass} w-16 text-center`} />
                         <span className="text-xs text-muted-foreground">min</span>
                       </div>
                       {dishForm.steps.length > 1 && (
@@ -229,6 +241,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
+
                 <div className="flex gap-2">
                   <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
                   <button onClick={() => setShowDishForm(false)} className="px-4 py-2 border border-border rounded-lg text-sm font-body text-muted-foreground">Cancel</button>
@@ -263,7 +276,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Places Tab */}
         {tab === 'places' && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -276,9 +288,9 @@ export default function AdminDashboard() {
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
                 <h3 className="font-heading font-semibold text-foreground">{editingPlace ? 'Edit Place' : 'Add New Place'}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <input placeholder="Place name" value={placeForm.name} onChange={e => setPlaceForm(p => ({ ...p, name: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Location" value={placeForm.location} onChange={e => setPlaceForm(p => ({ ...p, location: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
-                  <input placeholder="Type (e.g. Restaurant)" value={placeForm.type} onChange={e => setPlaceForm(p => ({ ...p, type: e.target.value }))} className="px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm" />
+                  <input placeholder="Place name" value={placeForm.name} onChange={e => setPlaceForm(p => ({ ...p, name: e.target.value }))} className={inputClass} />
+                  <input placeholder="Location" value={placeForm.location} onChange={e => setPlaceForm(p => ({ ...p, location: e.target.value }))} className={inputClass} />
+                  <input placeholder="Type (e.g. Restaurant)" value={placeForm.type} onChange={e => setPlaceForm(p => ({ ...p, type: e.target.value }))} className={inputClass} />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={handleAddPlace} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
@@ -303,7 +315,7 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{p.location}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{p.type}</td>
                       <td className="px-4 py-3 text-right space-x-2">
-                        <button onClick={() => { setEditingPlace(p); setPlaceForm({ name: p.name, location: p.location, type: p.type }); setShowPlaceForm(true); }} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                        <button onClick={() => { setEditingPlace(p); setPlaceForm({ name: p.name, location: p.location, type: p.type }); setShowPlaceForm(true); }} className="text-muted-foreground hover:text-foreground"><Plus size={14} /></button>
                         <button onClick={() => deletePlace(p.id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
                       </td>
                     </tr>
@@ -314,28 +326,23 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Users Tab */}
         {tab === 'users' && (
           <div className="space-y-4">
-            <h2 className="font-heading text-lg font-semibold text-foreground">All Users</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground">Registered Users</h2>
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Email</th>
                     <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Role</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Created</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground font-body">Joined</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map(u => (
                     <tr key={u.id} className="border-t border-border">
                       <td className="px-4 py-3 text-sm text-foreground font-body">{u.email}</td>
-                      <td className="px-4 py-3 text-sm font-body">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                          {u.role}
-                        </span>
-                      </td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground font-body capitalize">{u.role}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground font-body">{u.createdAt}</td>
                     </tr>
                   ))}

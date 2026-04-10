@@ -2,8 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLang } from '@/contexts/LanguageContext';
 import { useRecipes } from '@/contexts/RecipesContext';
+import { useSavedRecipes } from '@/contexts/SavedRecipesContext';
+import { useAuth } from '@/contexts/AuthContext';
 import TextToSpeech from '@/components/TextToSpeech';
-import { ArrowLeft, MapPin, Clock, Play, Pause, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Play, Pause, RotateCcw, CheckCircle2, Calculator, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function RecipeDetail() {
@@ -11,13 +13,19 @@ export default function RecipeDetail() {
   const navigate = useNavigate();
   const { t, lang } = useLang();
   const { allRecipes } = useRecipes();
+  const { user } = useAuth();
+  const { saveRecipe, unsaveRecipe, isRecipeSaved } = useSavedRecipes();
   const recipe = allRecipes.find(r => r.id === Number(id));
 
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [multiplier, setMultiplier] = useState(1);
+  const [showCalc, setShowCalc] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const saved = user && recipe ? isRecipeSaved(user.id, recipe.id) : false;
 
   const speakMessage = useCallback((message: string) => {
     const utterance = new SpeechSynthesisUtterance(message);
@@ -75,11 +83,8 @@ export default function RecipeDetail() {
     const step = recipe.steps[stepIndex];
     if (step.timeMinutes <= 0) {
       setCompletedSteps(prev => new Set(prev).add(stepIndex));
-      if (stepIndex === recipe.steps.length - 1) {
-        speakMessage('Your dish is ready to eat! Enjoy your meal!');
-      } else {
-        speakMessage('Step complete! Ready for the next step.');
-      }
+      if (stepIndex === recipe.steps.length - 1) speakMessage('Your dish is ready to eat!');
+      else speakMessage('Step complete! Ready for the next step.');
       return;
     }
     setActiveStep(stepIndex);
@@ -88,12 +93,9 @@ export default function RecipeDetail() {
   };
 
   const toggleTimer = () => setTimerRunning(prev => !prev);
-
   const resetTimer = () => {
     setTimerRunning(false);
-    if (activeStep !== null) {
-      setTimeLeft(Math.round(recipe.steps[activeStep].timeMinutes * 60));
-    }
+    if (activeStep !== null) setTimeLeft(Math.round(recipe.steps[activeStep].timeMinutes * 60));
   };
 
   const formatTime = (seconds: number) => {
@@ -106,22 +108,33 @@ export default function RecipeDetail() {
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(recipe.origin)}`, '_blank');
   };
 
+  const toggleSave = () => {
+    if (!user) return;
+    if (saved) unsaveRecipe(user.id, recipe.id);
+    else saveRecipe(user.id, recipe.id);
+  };
+
   const allStepsText = recipe.steps.map((s, i) => `Step ${i + 1}: ${s.instruction[lang]}. Time: ${s.timeMinutes > 0 ? s.timeMinutes + ' minutes' : 'No timer needed'}`).join('. ');
+
+  const hasIngredients = recipe.ingredients && recipe.ingredients.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
       <div className="relative h-64 md:h-80">
         <img src={recipe.image} alt={recipe.name[lang]} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
         <button onClick={() => navigate('/')} className="absolute top-4 left-4 z-10 p-2 rounded-full bg-background/80 text-foreground backdrop-blur-sm">
           <ArrowLeft size={20} />
         </button>
+        {user && (
+          <button onClick={toggleSave} className={`absolute top-4 right-4 z-10 p-2 rounded-full backdrop-blur-sm transition-colors ${saved ? 'bg-destructive/80 text-white' : 'bg-background/60 text-foreground'}`}>
+            <Heart size={20} fill={saved ? 'currentColor' : 'none'} />
+          </button>
+        )}
       </div>
 
       <div className="container mx-auto px-4 -mt-16 relative z-10 pb-16">
         <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-lg">
-          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
             <div>
               <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{recipe.name[lang]}</h1>
@@ -135,10 +148,49 @@ export default function RecipeDetail() {
             <TextToSpeech text={`${recipe.name[lang]}. ${recipe.description[lang]}. ${allStepsText}`} label={lang === 'kn' ? 'ಪಾಕವಿಧಾನ ಓದಿ' : 'Read Recipe'} />
           </div>
 
-          {/* Description */}
           <div className="mb-8">
             <p className="text-muted-foreground leading-relaxed font-body">{recipe.description[lang]}</p>
           </div>
+
+          {/* Ingredient Ratio Calculator */}
+          {hasIngredients && (
+            <div className="mb-8 bg-muted/30 rounded-xl border border-border p-4">
+              <button onClick={() => setShowCalc(!showCalc)} className="flex items-center gap-2 font-heading text-lg font-bold text-foreground w-full text-left">
+                <Calculator size={20} className="text-primary" />
+                {lang === 'kn' ? 'ಪ್ರಮಾಣ ಕ್ಯಾಲ್ಕುಲೇಟರ್' : 'Ratio Calculator'}
+              </button>
+              {showCalc && (
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm font-body text-muted-foreground">
+                      {lang === 'kn' ? 'ಗುಣಕ:' : 'Multiplier:'}
+                    </label>
+                    <div className="flex items-center gap-1">
+                      {[0.5, 1, 2, 3, 5].map(m => (
+                        <button key={m} onClick={() => setMultiplier(m)} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${multiplier === m ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>
+                          {m}x
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {recipe.ingredients!.map((ing, i) => (
+                      <div key={i} className="flex items-center justify-between bg-background rounded-lg px-3 py-2 border border-border">
+                        <span className="text-sm font-body text-foreground">{ing.name[lang]}</span>
+                        <span className="text-sm font-bold text-primary">
+                          {(ing.ratio * multiplier).toFixed(ing.unit === 'cups' ? 0 : 2)} {ing.unit === 'cups' ? (lang === 'kn' ? 'ಕಪ್ (200ml)' : 'cups (200ml)') : 'kg'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground font-body">
+                    {lang === 'kn' ? 'ಅನುಪಾತ: ' : 'Ratio: '}
+                    {recipe.ingredients!.map(ing => `${ing.name[lang]} ${ing.ratio}`).join(' : ')}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Steps */}
           <h2 className="font-heading text-xl font-bold text-foreground mb-4">
@@ -179,18 +231,11 @@ export default function RecipeDetail() {
                           </span>
                         )}
                         {!isCompleted && (
-                          <button
-                            onClick={() => startTimer(i)}
-                            className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                          >
-                            {step.timeMinutes > 0
-                              ? (lang === 'kn' ? 'ಟೈಮರ್ ಪ್ರಾರಂಭಿಸಿ' : 'Start Timer')
-                              : (lang === 'kn' ? 'ಮುಗಿದಿದೆ ಎಂದು ಗುರುತಿಸಿ' : 'Mark Done')}
+                          <button onClick={() => startTimer(i)} className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                            {step.timeMinutes > 0 ? (lang === 'kn' ? 'ಟೈಮರ್ ಪ್ರಾರಂಭಿಸಿ' : 'Start Timer') : (lang === 'kn' ? 'ಮುಗಿದಿದೆ ಎಂದು ಗುರುತಿಸಿ' : 'Mark Done')}
                           </button>
                         )}
                         <TextToSpeech text={step.instruction[lang]} label={lang === 'kn' ? 'ಕೇಳಿ' : 'Listen'} />
-
-                        {/* Inline timer for this step */}
                         {isActiveTimer && (
                           <span className="inline-flex items-center gap-2 ml-auto text-sm text-primary font-bold">
                             <span className="font-heading">{formatTime(timeLeft)}</span>
