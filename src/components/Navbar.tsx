@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Shield, Settings } from 'lucide-react';
+import { Menu, X, Shield, Settings, Bookmark } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +31,6 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
     setOpen(false);
   };
 
-  // When not scrolled (on dark hero), use white text
   const textClass = scrolled ? 'text-foreground' : 'text-white';
   const mutedTextClass = scrolled ? 'text-muted-foreground' : 'text-white/70';
 
@@ -50,16 +49,25 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
                 {t(`nav.${l}`)}
               </button>
             ))}
+            {user && (
+              <button onClick={() => navigate('/my-recipes')} className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-1 ${mutedTextClass}`}>
+                <Bookmark size={14} /> {t('nav.myRecipes')}
+              </button>
+            )}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
+            {/* Lang toggle always visible */}
             <button onClick={toggleLang} className={`text-xs px-3 py-1.5 rounded-full border ${scrolled ? 'border-border text-muted-foreground hover:text-foreground' : 'border-white/30 text-white/70 hover:text-white'} transition-colors`}>
               {t('nav.langToggle')}
             </button>
 
-            <button onClick={() => navigate('/settings')} className={`p-2 rounded-lg ${mutedTextClass} hover:text-primary transition-colors`}>
-              <Settings size={16} />
-            </button>
+            {/* Settings only for admin */}
+            {isAdmin && (
+              <button onClick={() => navigate('/settings')} className={`p-2 rounded-lg ${mutedTextClass} hover:text-primary transition-colors`}>
+                <Settings size={16} />
+              </button>
+            )}
 
             {user ? (
               <>
@@ -85,10 +93,15 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <button onClick={() => setOpen(!open)} className={`md:hidden p-2 ${textClass}`}>
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile: lang toggle + hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <button onClick={toggleLang} className={`text-xs px-2.5 py-1 rounded-full border ${scrolled ? 'border-border text-muted-foreground' : 'border-white/30 text-white/70'} transition-colors`}>
+              {t('nav.langToggle')}
+            </button>
+            <button onClick={() => setOpen(!open)} className={`p-2 ${textClass}`}>
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -104,14 +117,20 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
                   {t(`nav.${l}`)}
                 </button>
               ))}
-              <hr className="border-border" />
-              <button onClick={toggleLang} className="text-sm text-muted-foreground">
-                {t('nav.langToggle')}
-              </button>
 
-              <button onClick={() => { navigate('/settings'); setOpen(false); }} className="text-left font-medium flex items-center gap-2 text-muted-foreground">
-                <Settings size={16} /> Settings
-              </button>
+              {user && (
+                <button onClick={() => { navigate('/my-recipes'); setOpen(false); }} className="text-left font-medium flex items-center gap-2 text-foreground">
+                  <Bookmark size={16} /> {t('nav.myRecipes')}
+                </button>
+              )}
+
+              <hr className="border-border" />
+
+              {isAdmin && (
+                <button onClick={() => { navigate('/settings'); setOpen(false); }} className="text-left font-medium flex items-center gap-2 text-muted-foreground">
+                  <Settings size={16} /> Settings
+                </button>
+              )}
 
               {user ? (
                 <>

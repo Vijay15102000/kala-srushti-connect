@@ -6,10 +6,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { RecipesProvider } from "@/contexts/RecipesContext";
+import { SavedRecipesProvider } from "@/contexts/SavedRecipesContext";
 import Index from "./pages/Index.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import RecipeDetail from "./pages/RecipeDetail.tsx";
 import Settings from "./pages/Settings.tsx";
+import MyRecipes from "./pages/MyRecipes.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -19,19 +21,22 @@ const App = () => (
     <AuthProvider>
       <LanguageProvider>
         <RecipesProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/recipe/:id" element={<RecipeDetail />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+          <SavedRecipesProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/recipe/:id" element={<RecipeDetail />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/my-recipes" element={<MyRecipes />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </SavedRecipesProvider>
         </RecipesProvider>
       </LanguageProvider>
     </AuthProvider>
