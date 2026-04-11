@@ -31,7 +31,8 @@ export default function TextToSpeech({ text, label = 'Play Audio', onComplete }:
       v.name.includes('Daniel') ||
       v.name.includes('James') ||
       v.name.includes('Male')
-    ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+    ) 
+      // || voices.find(v => v.lang.startsWith('en')) || voices[0];
 
     if (preferred) utterance.voice = preferred;
 
