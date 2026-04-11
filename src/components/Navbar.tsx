@@ -11,7 +11,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onLogin, onSignup }: NavbarProps) {
-  const { t, toggleLang } = useLang();
+  const { t, lang, toggleLang } = useLang();
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -39,7 +39,7 @@ export default function Navbar({ onLogin, onSignup }: NavbarProps) {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass-panel shadow-lg' : 'bg-transparent'}`}>
         <div className="container mx-auto flex items-center justify-between px-4 py-3 md:py-4">
           <button onClick={() => scrollTo('home')} className={`font-heading text-xl md:text-2xl font-bold tracking-tight ${textClass}`}>
-            Karnataka <span className="text-gradient">Culinary</span>
+            {lang === 'kn' ? 'ಕರ್ನಾಟಕ ' : 'Karnataka '}<span className="text-gradient">{lang === 'kn' ? 'ಪಾಕಶಾಸ್ತ್ರ' : 'Culinary'}</span>
           </button>
 
           {/* Desktop */}

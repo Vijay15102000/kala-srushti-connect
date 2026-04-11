@@ -158,18 +158,18 @@ export default function RecipeDetail() {
             <div className="mb-8 bg-muted/30 rounded-xl border border-border p-4">
               <button onClick={() => setShowCalc(!showCalc)} className="flex items-center gap-2 font-heading text-lg font-bold text-foreground w-full text-left">
                 <Calculator size={20} className="text-primary" />
-                {lang === 'kn' ? 'ಪ್ರಮಾಣ ಕ್ಯಾಲ್ಕುಲೇಟರ್' : 'Ratio Calculator'}
+                {lang === 'kn' ? 'ವ್ಯಕ್ತಿಗಳ ಪ್ರಮಾಣ ಕ್ಯಾಲ್ಕುಲೇಟರ್' : 'Persons Calculator'}
               </button>
               {showCalc && (
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-3">
                     <label className="text-sm font-body text-muted-foreground">
-                      {lang === 'kn' ? 'ಗುಣಕ:' : 'Multiplier:'}
+                      {lang === 'kn' ? 'ವ್ಯಕ್ತಿಗಳ ಸಂಖ್ಯೆ:' : 'Number of persons:'}
                     </label>
                     <div className="flex items-center gap-1">
-                      {[0.5, 1, 2, 3, 5].map(m => (
+                      {[1, 2, 3, 4, 5, 6, 8, 10].map(m => (
                         <button key={m} onClick={() => setMultiplier(m)} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${multiplier === m ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>
-                          {m}x
+                          {m}
                         </button>
                       ))}
                     </div>
@@ -185,7 +185,7 @@ export default function RecipeDetail() {
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground font-body">
-                    {lang === 'kn' ? 'ಅನುಪಾತ: ' : 'Ratio: '}
+                    {lang === 'kn' ? 'ಪ್ರತಿ ವ್ಯಕ್ತಿಗೆ ಅನುಪಾತ: ' : 'Per person ratio: '}
                     {recipe.ingredients!.map(ing => `${ing.name[lang]} ${ing.ratio}`).join(' : ')}
                   </p>
                 </div>
@@ -229,7 +229,7 @@ export default function RecipeDetail() {
                         <div className="mt-2 flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-1.5 w-fit">
                           <Clock size={12} className="text-muted-foreground" />
                           <span className="text-xs font-medium text-muted-foreground">
-                            {lang === 'kn' ? 'ಸಮಯ:' : 'Time:'} {step.timeMinutes} {lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}
+                            {lang === 'kn' ? 'ಸಮಯ:' : 'Time:'} {step.timeMinutes >= 60 ? `${(step.timeMinutes / 60).toFixed(step.timeMinutes % 60 === 0 ? 0 : 1)} ${lang === 'kn' ? 'ಗಂಟೆ' : 'hr'}` : `${step.timeMinutes} ${lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}`}
                           </span>
                           {isActiveTimer && (
                             <span className="inline-flex items-center gap-1.5 ml-1 text-xs text-primary font-bold">
