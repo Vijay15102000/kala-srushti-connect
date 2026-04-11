@@ -26,7 +26,7 @@ export default function TextToSpeech({ text, label = 'Play Audio', onComplete }:
 
     // Try to pick a deeper/dramatic voice
     const voices = window.speechSynthesis.getVoices();
-console.log("Voices:", voices);
+console.log("Voices:", voices.name);
     const preferred = voices.find(v =>
       v.name.includes('Google UK English Male') ||
       v.name.includes('Daniel') ||
