@@ -229,7 +229,7 @@ export default function RecipeDetail() {
                         <div className="mt-2 flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-1.5 w-fit">
                           <Clock size={12} className="text-muted-foreground" />
                           <span className="text-xs font-medium text-muted-foreground">
-                            {lang === 'kn' ? 'ಸಮಯ:' : 'Time:'} {step.timeMinutes} {lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}
+                            {lang === 'kn' ? 'ಸಮಯ:' : 'Time:'} {step.timeMinutes >= 60 ? `${(step.timeMinutes / 60).toFixed(step.timeMinutes % 60 === 0 ? 0 : 1)} ${lang === 'kn' ? 'ಗಂಟೆ' : 'hr'}` : `${step.timeMinutes} ${lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}`}
                           </span>
                           {isActiveTimer && (
                             <span className="inline-flex items-center gap-1.5 ml-1 text-xs text-primary font-bold">
