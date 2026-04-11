@@ -200,18 +200,24 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                   {dishForm.ingredients.map((ing, i) => (
-                    <div key={i} className="flex gap-2 items-center bg-muted/50 rounded-lg p-2">
-                      <span className="text-xs font-medium text-muted-foreground min-w-[20px]">{i + 1}.</span>
-                      <input placeholder="Name (EN)" value={ing.nameEn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameEn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
-                      <input placeholder="Name (KN)" value={ing.nameKn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameKn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
-                      <input type="number" min={0.1} step={0.1} placeholder="Ratio" value={ing.ratio} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], ratio: Number(e.target.value) }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} w-20 text-center`} />
-                      <select value={ing.unit} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], unit: e.target.value as 'kg' | 'cups' }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} w-24`}>
-                        <option value="kg">kg</option>
-                        <option value="cups">cups (200ml)</option>
-                      </select>
-                      {dishForm.ingredients.length > 1 && (
-                        <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: p.ingredients.filter((_, j) => j !== i) }))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
-                      )}
+                    <div key={i} className="bg-muted/50 rounded-lg p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">Ingredient {i + 1}</span>
+                        {dishForm.ingredients.length > 1 && (
+                          <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: p.ingredients.filter((_, j) => j !== i) }))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input placeholder="Name (EN)" value={ing.nameEn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameEn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass} />
+                        <input placeholder="Name (KN)" value={ing.nameKn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameKn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass} />
+                        <div className="flex items-center gap-2">
+                          <input type="number" min={0.1} step={0.1} placeholder="Ratio" value={ing.ratio} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], ratio: Number(e.target.value) }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
+                        </div>
+                        <select value={ing.unit} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], unit: e.target.value as 'kg' | 'cups' }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass}>
+                          <option value="kg">kg</option>
+                          <option value="cups">cups (200ml)</option>
+                        </select>
+                      </div>
                     </div>
                   ))}
                 </div>

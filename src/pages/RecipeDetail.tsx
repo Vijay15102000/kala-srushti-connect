@@ -127,8 +127,9 @@ export default function RecipeDetail() {
           <ArrowLeft size={20} />
         </button>
         {user && (
-          <button onClick={toggleSave} className={`absolute top-4 right-4 z-10 p-2 rounded-full backdrop-blur-sm transition-colors ${saved ? 'bg-destructive/80 text-white' : 'bg-background/60 text-foreground'}`}>
-            <Heart size={20} fill={saved ? 'currentColor' : 'none'} />
+          <button onClick={toggleSave} className={`absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-2 rounded-full backdrop-blur-sm transition-colors text-sm font-body font-medium ${saved ? 'bg-destructive/80 text-white' : 'bg-background/80 text-foreground'}`}>
+            <Heart size={16} fill={saved ? 'currentColor' : 'none'} />
+            {saved ? (lang === 'kn' ? 'ಉಳಿಸಲಾಗಿದೆ' : 'Saved') : (lang === 'kn' ? 'ಉಳಿಸಿ' : 'Save')}
           </button>
         )}
       </div>
@@ -224,29 +225,32 @@ export default function RecipeDetail() {
                     </div>
                     <div className="flex-1">
                       <p className="text-foreground font-body">{step.instruction[lang]}</p>
-                      <div className="flex flex-wrap items-center gap-3 mt-2">
-                        {step.timeMinutes > 0 && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock size={12} /> {step.timeMinutes} {lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}
+                      {step.timeMinutes > 0 && (
+                        <div className="mt-2 flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-1.5 w-fit">
+                          <Clock size={12} className="text-muted-foreground" />
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {lang === 'kn' ? 'ಸಮಯ:' : 'Time:'} {step.timeMinutes} {lang === 'kn' ? 'ನಿಮಿಷ' : 'min'}
                           </span>
-                        )}
+                          {isActiveTimer && (
+                            <span className="inline-flex items-center gap-1.5 ml-1 text-xs text-primary font-bold">
+                              <span className="font-heading">{formatTime(timeLeft)}</span>
+                              <button onClick={toggleTimer} className="p-0.5 rounded-full bg-primary/10 hover:bg-primary/20">
+                                {timerRunning ? <Pause size={12} /> : <Play size={12} />}
+                              </button>
+                              <button onClick={resetTimer} className="p-0.5 rounded-full bg-muted hover:bg-muted/80">
+                                <RotateCcw size={12} />
+                              </button>
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex flex-wrap items-center gap-3 mt-2">
                         {!isCompleted && (
                           <button onClick={() => startTimer(i)} className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
                             {step.timeMinutes > 0 ? (lang === 'kn' ? 'ಟೈಮರ್ ಪ್ರಾರಂಭಿಸಿ' : 'Start Timer') : (lang === 'kn' ? 'ಮುಗಿದಿದೆ ಎಂದು ಗುರುತಿಸಿ' : 'Mark Done')}
                           </button>
                         )}
                         <TextToSpeech text={step.instruction[lang]} label={lang === 'kn' ? 'ಕೇಳಿ' : 'Listen'} />
-                        {isActiveTimer && (
-                          <span className="inline-flex items-center gap-2 ml-auto text-sm text-primary font-bold">
-                            <span className="font-heading">{formatTime(timeLeft)}</span>
-                            <button onClick={toggleTimer} className="p-1 rounded-full bg-primary/10 hover:bg-primary/20">
-                              {timerRunning ? <Pause size={14} /> : <Play size={14} />}
-                            </button>
-                            <button onClick={resetTimer} className="p-1 rounded-full bg-muted hover:bg-muted/80">
-                              <RotateCcw size={14} />
-                            </button>
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
