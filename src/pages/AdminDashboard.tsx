@@ -194,7 +194,7 @@ export default function AdminDashboard() {
                 {/* Ingredients Section */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-body text-sm font-medium text-foreground">Ingredient Ratios (e.g. Rice 3 : Dal 1 : Water 6 cups)</h4>
+                    <h4 className="font-body text-sm font-medium text-foreground">Ingredient Ratios per person (e.g. Rice 0.5kg : Dal 0.2kg : Water 2 cups per person)</h4>
                     <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: [...p.ingredients, { ...emptyIngredient }] }))} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
                       <Plus size={12} /> Add Ingredient
                     </button>

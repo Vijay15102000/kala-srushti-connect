@@ -36,7 +36,7 @@ export const recipes: Recipe[] = [
       kn: 'ಮಸಾಲೆ ಆಲೂಗಡ್ಡೆ ತುಂಬಿದ ಗರಿಗರಿಯಾದ ಹುದುಗಿದ ಅಕ್ಕಿ ಮತ್ತು ಬೇಳೆ ಕ್ರೆಪ್, ಸಾಂಬಾರ್ ಮತ್ತು ಚಟ್ನಿಯೊಂದಿಗೆ ಬಡಿಸಲಾಗುತ್ತದೆ.'
     },
     steps: [
-      { instruction: { en: 'Soak rice and urad dal for 6 hours, then grind into a smooth batter', kn: 'ಅಕ್ಕಿ ಮತ್ತು ಉದ್ದಿನ ಬೇಳೆಯನ್ನು 6 ಗಂಟೆ ನೆನೆಸಿ, ನಯವಾದ ಹಿಟ್ಟು ರುಬ್ಬಿ' }, timeMinutes: 0.5 },
+      { instruction: { en: 'Soak rice and urad dal for 6 hours, then grind into a smooth batter', kn: 'ಅಕ್ಕಿ ಮತ್ತು ಉದ್ದಿನ ಬೇಳೆಯನ್ನು 6 ಗಂಟೆ ನೆನೆಸಿ, ನಯವಾದ ಹಿಟ್ಟು ರುಬ್ಬಿ' }, timeMinutes: 360 },
       { instruction: { en: 'Let the batter ferment overnight (8-10 hours)', kn: 'ಹಿಟ್ಟನ್ನು ರಾತ್ರಿಯಿಡೀ ಹುದುಗಲು ಬಿಡಿ (8-10 ಗಂಟೆ)' }, timeMinutes: 0 },
       { instruction: { en: 'Boil potatoes, peel and mash them coarsely', kn: 'ಆಲೂಗಡ್ಡೆಯನ್ನು ಬೇಯಿಸಿ, ಸಿಪ್ಪೆ ತೆಗೆದು ಒರಟಾಗಿ ಅರೆಯಿರಿ' }, timeMinutes: 15 },
       { instruction: { en: 'Heat oil, add mustard seeds, curry leaves, onions and sauté till golden', kn: 'ಎಣ್ಣೆ ಕಾಯಿಸಿ, ಸಾಸಿವೆ, ಕರಿಬೇವು, ಈರುಳ್ಳಿ ಹಾಕಿ ಹೊಂಬಣ್ಣ ಬರುವವರೆಗೆ ಹುರಿಯಿರಿ' }, timeMinutes: 5 },
