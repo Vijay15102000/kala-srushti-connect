@@ -35,6 +35,14 @@ export const recipes: Recipe[] = [
       en: 'A crispy fermented rice and lentil crepe filled with spiced potato filling, served with sambar and chutney. An iconic South Indian breakfast.',
       kn: 'ಮಸಾಲೆ ಆಲೂಗಡ್ಡೆ ತುಂಬಿದ ಗರಿಗರಿಯಾದ ಹುದುಗಿದ ಅಕ್ಕಿ ಮತ್ತು ಬೇಳೆ ಕ್ರೆಪ್, ಸಾಂಬಾರ್ ಮತ್ತು ಚಟ್ನಿಯೊಂದಿಗೆ ಬಡಿಸಲಾಗುತ್ತದೆ.'
     },
+    ingredients: [
+      { name: { en: 'Rice', kn: 'ಅಕ್ಕಿ' }, ratio: 0.15, unit: 'kg' },
+      { name: { en: 'Urad Dal', kn: 'ಉದ್ದಿನ ಬೇಳೆ' }, ratio: 0.05, unit: 'kg' },
+      { name: { en: 'Potato', kn: 'ಆಲೂಗಡ್ಡೆ' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Onion', kn: 'ಈರುಳ್ಳಿ' }, ratio: 0.05, unit: 'kg' },
+      { name: { en: 'Oil', kn: 'ಎಣ್ಣೆ' }, ratio: 0.02, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 2, unit: 'cups' },
+    ],
     steps: [
       { instruction: { en: 'Soak rice and urad dal for 6 hours, then grind into a smooth batter', kn: 'ಅಕ್ಕಿ ಮತ್ತು ಉದ್ದಿನ ಬೇಳೆಯನ್ನು 6 ಗಂಟೆ ನೆನೆಸಿ, ನಯವಾದ ಹಿಟ್ಟು ರುಬ್ಬಿ' }, timeMinutes: 360 },
       { instruction: { en: 'Let the batter ferment overnight (8-10 hours)', kn: 'ಹಿಟ್ಟನ್ನು ರಾತ್ರಿಯಿಡೀ ಹುದುಗಲು ಬಿಡಿ (8-10 ಗಂಟೆ)' }, timeMinutes: 0 },
@@ -57,6 +65,15 @@ export const recipes: Recipe[] = [
       en: 'A spicy, tangy one-pot rice and lentil dish from the royal kitchens of Mysore. Meaning "hot lentil rice," it features a unique spice powder blend.',
       kn: 'ಮೈಸೂರು ರಾಜ ಅಡುಗೆಮನೆಯಿಂದ ಬಂದ ಖಾರ ಮತ್ತು ಹುಳಿಯಾದ ಏಕಪಾತ್ರೆ ಅನ್ನ ಮತ್ತು ಬೇಳೆ ಖಾದ್ಯ.'
     },
+    ingredients: [
+      { name: { en: 'Rice', kn: 'ಅಕ್ಕಿ' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Toor Dal', kn: 'ತೊಗರಿ ಬೇಳೆ' }, ratio: 0.05, unit: 'kg' },
+      { name: { en: 'Mixed Vegetables', kn: 'ಮಿಶ್ರ ತರಕಾರಿ' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Tamarind', kn: 'ಹುಣಸೆ' }, ratio: 0.01, unit: 'kg' },
+      { name: { en: 'BBB Spice Powder', kn: 'ಬಿಬಿಬಿ ಮಸಾಲೆ ಪುಡಿ' }, ratio: 0.02, unit: 'kg' },
+      { name: { en: 'Ghee', kn: 'ತುಪ್ಪ' }, ratio: 0.02, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 3, unit: 'cups' },
+    ],
     steps: [
       { instruction: { en: 'Cook toor dal and rice separately until soft', kn: 'ತೊಗರಿ ಬೇಳೆ ಮತ್ತು ಅಕ್ಕಿಯನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ಮೆದುವಾಗುವವರೆಗೆ ಬೇಯಿಸಿ' }, timeMinutes: 20 },
       { instruction: { en: 'Dry roast and grind BBB spice powder: coriander seeds, chana dal, fenugreek, dry coconut, red chilies', kn: 'ಬಿಬಿಬಿ ಮಸಾಲೆ ಪುಡಿ ಹುರಿದು ಅರೆಯಿರಿ' }, timeMinutes: 8 },
@@ -78,6 +95,14 @@ export const recipes: Recipe[] = [
       en: 'A traditional Mangalorean dish of spicy chicken curry served over crispy rice wafers. The wafers absorb the rich coconut-based curry.',
       kn: 'ಗರಿಗರಿಯಾದ ಅಕ್ಕಿ ರೊಟ್ಟಿ ಮೇಲೆ ಬಡಿಸುವ ಖಾರ ಕೋಳಿ ಸಾರಿನ ಸಾಂಪ್ರದಾಯಿಕ ಮಂಗಳೂರು ಖಾದ್ಯ.'
     },
+    ingredients: [
+      { name: { en: 'Chicken', kn: 'ಕೋಳಿ' }, ratio: 0.25, unit: 'kg' },
+      { name: { en: 'Coconut', kn: 'ತೆಂಗಿನಕಾಯಿ' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Shallots', kn: 'ಸಣ್ಣ ಈರುಳ್ಳಿ' }, ratio: 0.05, unit: 'kg' },
+      { name: { en: 'Kori Rotti (Rice Wafers)', kn: 'ಕೋರಿ ರೊಟ್ಟಿ' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Tamarind', kn: 'ಹುಣಸೆ' }, ratio: 0.01, unit: 'kg' },
+      { name: { en: 'Oil', kn: 'ಎಣ್ಣೆ' }, ratio: 0.03, unit: 'kg' },
+    ],
     steps: [
       { instruction: { en: 'Grind coconut, shallots, garlic, ginger, and spices into a smooth paste', kn: 'ತೆಂಗಿನಕಾಯಿ, ಸಣ್ಣ ಈರುಳ್ಳಿ, ಬೆಳ್ಳುಳ್ಳಿ, ಶುಂಠಿ ಮತ್ತು ಮಸಾಲೆಗಳನ್ನು ನಯವಾದ ಪೇಸ್ಟ್ ಆಗಿ ಅರೆಯಿರಿ' }, timeMinutes: 5 },
       { instruction: { en: 'Marinate chicken pieces with turmeric and salt for 15 minutes', kn: 'ಕೋಳಿ ತುಂಡುಗಳನ್ನು ಅರಿಶಿನ ಮತ್ತು ಉಪ್ಪಿನೊಂದಿಗೆ 15 ನಿಮಿಷ ನೆನೆಸಿ' }, timeMinutes: 15 },
@@ -98,6 +123,10 @@ export const recipes: Recipe[] = [
       en: 'A traditional finger millet ball staple of Karnataka. Nutritious and filling, it\'s served with sambar or curry.',
       kn: 'ಕರ್ನಾಟಕದ ಸಾಂಪ್ರದಾಯಿಕ ರಾಗಿ ಮುದ್ದೆ. ಪೌಷ್ಟಿಕ ಮತ್ತು ಹೊಟ್ಟೆ ತುಂಬಿಸುವ, ಸಾಂಬಾರ್ ಅಥವಾ ಸಾರಿನೊಂದಿಗೆ ಬಡಿಸಲಾಗುತ್ತದೆ.'
     },
+    ingredients: [
+      { name: { en: 'Ragi Flour', kn: 'ರಾಗಿ ಹಿಟ್ಟು' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 3, unit: 'cups' },
+    ],
     steps: [
       { instruction: { en: 'Boil 3 cups of water in a thick-bottomed vessel', kn: '3 ಕಪ್ ನೀರನ್ನು ದಪ್ಪ ಬುಡದ ಪಾತ್ರೆಯಲ್ಲಿ ಕುದಿಸಿ' }, timeMinutes: 5 },
       { instruction: { en: 'Reduce heat, slowly add ragi flour while stirring continuously to avoid lumps', kn: 'ಉರಿ ಕಡಿಮೆ ಮಾಡಿ, ಗಂಟು ಬಿಡದಂತೆ ನಿರಂತರವಾಗಿ ತಿರುಗಿಸುತ್ತಾ ರಾಗಿ ಹಿಟ್ಟನ್ನು ನಿಧಾನವಾಗಿ ಸೇರಿಸಿ' }, timeMinutes: 5 },
@@ -118,6 +147,11 @@ export const recipes: Recipe[] = [
       en: 'A paper-thin, lacy rice crepe from the Mangalore coast. "Neer" means water — the batter is very thin. Served with coconut chutney.',
       kn: 'ಮಂಗಳೂರು ಕರಾವಳಿಯ ಕಾಗದದಂತೆ ತೆಳುವಾದ ಅಕ್ಕಿ ಕ್ರೆಪ್. "ನೀರ್" ಎಂದರೆ ನೀರು — ಹಿಟ್ಟು ತುಂಬಾ ತೆಳುವಾಗಿರುತ್ತದೆ.'
     },
+    ingredients: [
+      { name: { en: 'Rice', kn: 'ಅಕ್ಕಿ' }, ratio: 0.15, unit: 'kg' },
+      { name: { en: 'Coconut', kn: 'ತೆಂಗಿನಕಾಯಿ' }, ratio: 0.03, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 2, unit: 'cups' },
+    ],
     steps: [
       { instruction: { en: 'Soak rice in water for 4-5 hours', kn: 'ಅಕ್ಕಿಯನ್ನು 4-5 ಗಂಟೆ ನೀರಿನಲ್ಲಿ ನೆನೆಸಿ' }, timeMinutes: 0 },
       { instruction: { en: 'Grind soaked rice with coconut and salt into a very thin, watery batter', kn: 'ನೆನೆಸಿದ ಅಕ್ಕಿಯನ್ನು ತೆಂಗಿನಕಾಯಿ ಮತ್ತು ಉಪ್ಪಿನೊಂದಿಗೆ ತುಂಬಾ ತೆಳುವಾದ ಹಿಟ್ಟಾಗಿ ಅರೆಯಿರಿ' }, timeMinutes: 5 },
@@ -138,6 +172,12 @@ export const recipes: Recipe[] = [
       en: 'A legendary sweet from the Mysore Palace kitchens made with generous amounts of ghee, gram flour, and sugar.',
       kn: 'ಮೈಸೂರು ಅರಮನೆ ಅಡುಗೆಮನೆಯಿಂದ ಬಂದ ಪ್ರಸಿದ್ಧ ಸಿಹಿ ತಿಂಡಿ, ಹೇರಳ ತುಪ್ಪ, ಕಡಲೆ ಹಿಟ್ಟು ಮತ್ತು ಸಕ್ಕರೆಯಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ.'
     },
+    ingredients: [
+      { name: { en: 'Gram Flour (Besan)', kn: 'ಕಡಲೆ ಹಿಟ್ಟು (ಬೇಸನ್)' }, ratio: 0.1, unit: 'kg' },
+      { name: { en: 'Sugar', kn: 'ಸಕ್ಕರೆ' }, ratio: 0.15, unit: 'kg' },
+      { name: { en: 'Ghee', kn: 'ತುಪ್ಪ' }, ratio: 0.15, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 1, unit: 'cups' },
+    ],
     steps: [
       { instruction: { en: 'Sieve gram flour (besan) finely to remove any lumps', kn: 'ಕಡಲೆ ಹಿಟ್ಟನ್ನು (ಬೇಸನ್) ಗಂಟಿಲ್ಲದಂತೆ ಸೂಕ್ಷ್ಮವಾಗಿ ಜರಡಿ ಹಾಕಿ' }, timeMinutes: 2 },
       { instruction: { en: 'Make sugar syrup with 2 cups sugar and 1 cup water, bring to one-string consistency', kn: '2 ಕಪ್ ಸಕ್ಕರೆ ಮತ್ತು 1 ಕಪ್ ನೀರಿನೊಂದಿಗೆ ಸಕ್ಕರೆ ಪಾಕ ಮಾಡಿ, ಒಂದು ಎಳೆ ಪಾಕಕ್ಕೆ ತನ್ನಿ' }, timeMinutes: 10 },
@@ -159,6 +199,13 @@ export const recipes: Recipe[] = [
       en: 'Crispy pan-fried ladyfish marinated in a spicy red masala, a beloved coastal Karnataka delicacy.',
       kn: 'ಖಾರ ಕೆಂಪು ಮಸಾಲೆಯಲ್ಲಿ ನೆನೆಸಿದ ಗರಿಗರಿಯಾದ ಕಣೆ ಮೀನು ಫ್ರೈ, ಕರಾವಳಿ ಕರ್ನಾಟಕದ ಪ್ರಿಯ ಖಾದ್ಯ.'
     },
+    ingredients: [
+      { name: { en: 'Ladyfish (Kane)', kn: 'ಕಣೆ ಮೀನು' }, ratio: 0.2, unit: 'kg' },
+      { name: { en: 'Red Chili Paste', kn: 'ಕೆಂಪು ಮೆಣಸಿನ ಪೇಸ್ಟ್' }, ratio: 0.03, unit: 'kg' },
+      { name: { en: 'Garlic', kn: 'ಬೆಳ್ಳುಳ್ಳಿ' }, ratio: 0.01, unit: 'kg' },
+      { name: { en: 'Oil', kn: 'ಎಣ್ಣೆ' }, ratio: 0.05, unit: 'kg' },
+      { name: { en: 'Tamarind', kn: 'ಹುಣಸೆ' }, ratio: 0.01, unit: 'kg' },
+    ],
     steps: [
       { instruction: { en: 'Clean the ladyfish, make slits on both sides', kn: 'ಕಣೆ ಮೀನನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ, ಎರಡೂ ಬದಿಗಳಲ್ಲಿ ಕೊಯ್ಯಿರಿ' }, timeMinutes: 5 },
       { instruction: { en: 'Grind red chilies, pepper, garlic, ginger, tamarind into a thick paste', kn: 'ಕೆಂಪು ಮೆಣಸಿನಕಾಯಿ, ಮೆಣಸು, ಬೆಳ್ಳುಳ್ಳಿ, ಶುಂಠಿ, ಹುಣಸೆಹಣ್ಣನ್ನು ದಪ್ಪ ಪೇಸ್ಟ್ ಆಗಿ ಅರೆಯಿರಿ' }, timeMinutes: 5 },
@@ -179,6 +226,11 @@ export const recipes: Recipe[] = [
       en: 'A hearty sorghum flatbread from North Karnataka, traditionally cooked on a wood fire and served with ennegai (stuffed brinjal).',
       kn: 'ಉತ್ತರ ಕರ್ನಾಟಕದ ಜೋಳದ ರೊಟ್ಟಿ, ಸಾಂಪ್ರದಾಯಿಕವಾಗಿ ಕಟ್ಟಿಗೆ ಒಲೆಯಲ್ಲಿ ಬೇಯಿಸಿ ಎಣ್ಣೆಗಾಯಿಯೊಂದಿಗೆ ಬಡಿಸಲಾಗುತ್ತದೆ.'
     },
+    ingredients: [
+      { name: { en: 'Jowar (Sorghum) Flour', kn: 'ಜೋಳದ ಹಿಟ್ಟು' }, ratio: 0.15, unit: 'kg' },
+      { name: { en: 'Water', kn: 'ನೀರು' }, ratio: 1, unit: 'cups' },
+      { name: { en: 'Ghee', kn: 'ತುಪ್ಪ' }, ratio: 0.02, unit: 'kg' },
+    ],
     steps: [
       { instruction: { en: 'Take jowar (sorghum) flour in a bowl, add warm water gradually and knead into a soft dough', kn: 'ಬಟ್ಟಲಿನಲ್ಲಿ ಜೋಳದ ಹಿಟ್ಟು ತೆಗೆದುಕೊಂಡು, ಕ್ರಮೇಣ ಬೆಚ್ಚಗಿನ ನೀರು ಸೇರಿಸಿ ಮೃದುವಾದ ಹಿಟ್ಟನ್ನು ಕಲಸಿ' }, timeMinutes: 5 },
       { instruction: { en: 'Divide dough into equal balls and pat each ball flat on a banana leaf or plastic sheet', kn: 'ಹಿಟ್ಟನ್ನು ಸಮ ಉಂಡೆಗಳಾಗಿ ಮಾಡಿ ಬಾಳೆ ಎಲೆ ಅಥವಾ ಪ್ಲಾಸ್ಟಿಕ್ ಹಾಳೆಯ ಮೇಲೆ ಚಪ್ಪಟೆಯಾಗಿ ತಟ್ಟಿ' }, timeMinutes: 3 },
