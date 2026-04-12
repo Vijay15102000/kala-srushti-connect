@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { RecipesProvider } from "@/contexts/RecipesContext";
 import { SavedRecipesProvider } from "@/contexts/SavedRecipesContext";
+import BackgroundMusic from "@/components/BackgroundMusic";
 import Index from "./pages/Index.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import RecipeDetail from "./pages/RecipeDetail.tsx";
@@ -35,6 +36,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
+              <BackgroundMusic />
             </TooltipProvider>
           </SavedRecipesProvider>
         </RecipesProvider>
