@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/contexts/RecipesContext';
-import { Users, UtensilsCrossed, MapPin, LogOut, Plus, Trash2 } from 'lucide-react';
-import type { Recipe, RecipeStep, Ingredient } from '@/lib/data';
+import { Users, UtensilsCrossed, MapPin, LogOut, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import type { Recipe, RecipeStep, Ingredient, Accompaniment } from '@/lib/data';
 
 type Tab = 'users' | 'dishes' | 'places';
 
@@ -36,6 +36,11 @@ const placeholderUsers: UserItem[] = [
 
 interface StepForm { instructionEn: string; instructionKn: string; timeMinutes: number; }
 interface IngredientForm { nameEn: string; nameKn: string; ratio: number; unit: 'kg' | 'cups'; }
+interface AccompanimentForm {
+  nameEn: string; nameKn: string;
+  steps: StepForm[];
+  ingredients: IngredientForm[];
+}
 
 interface DishForm {
   name: string; nameKn: string; region: string; foodType: string;
@@ -43,14 +48,76 @@ interface DishForm {
   time: string; image: string;
   steps: StepForm[];
   ingredients: IngredientForm[];
+  accompaniments: AccompanimentForm[];
 }
 
 const emptyStep: StepForm = { instructionEn: '', instructionKn: '', timeMinutes: 5 };
-const emptyIngredient: IngredientForm = { nameEn: '', nameKn: '', ratio: 1, unit: 'kg' };
+const emptyIngredient: IngredientForm = { nameEn: '', nameKn: '', ratio: 0.1, unit: 'kg' };
+const emptyAccompaniment: AccompanimentForm = { nameEn: '', nameKn: '', steps: [{ ...emptyStep }], ingredients: [{ ...emptyIngredient }] };
 const emptyDishForm: DishForm = {
   name: '', nameKn: '', region: '', foodType: '', origin: '', description: '', descriptionKn: '',
-  time: '', image: '', steps: [{ ...emptyStep }], ingredients: [{ ...emptyIngredient }],
+  time: '', image: '', steps: [{ ...emptyStep }], ingredients: [{ ...emptyIngredient }], accompaniments: [],
 };
+
+const inputClass = "px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm w-full";
+
+function StepsEditor({ steps, onChange }: { steps: StepForm[]; onChange: (s: StepForm[]) => void }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h4 className="font-body text-sm font-medium text-foreground">Steps</h4>
+        <button type="button" onClick={() => onChange([...steps, { ...emptyStep }])} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
+          <Plus size={12} /> Add Step
+        </button>
+      </div>
+      {steps.map((step, i) => (
+        <div key={i} className="flex gap-2 items-start bg-muted/50 rounded-lg p-2">
+          <span className="text-xs font-medium text-muted-foreground mt-2 min-w-[24px]">{i + 1}.</span>
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+            <input placeholder={`Step ${i + 1} (English)`} value={step.instructionEn} onChange={e => { const s = [...steps]; s[i] = { ...s[i], instructionEn: e.target.value }; onChange(s); }} className={inputClass} />
+            <input placeholder={`Step ${i + 1} (Kannada)`} value={step.instructionKn} onChange={e => { const s = [...steps]; s[i] = { ...s[i], instructionKn: e.target.value }; onChange(s); }} className={inputClass} />
+          </div>
+          <div className="flex items-center gap-1">
+            <input type="number" min={0} placeholder="Min" value={step.timeMinutes} onChange={e => { const s = [...steps]; s[i] = { ...s[i], timeMinutes: Number(e.target.value) }; onChange(s); }} className={`${inputClass} !w-16 text-center`} />
+            <span className="text-xs text-muted-foreground">min</span>
+          </div>
+          {steps.length > 1 && (
+            <button type="button" onClick={() => onChange(steps.filter((_, j) => j !== i))} className="mt-1 text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function IngredientsEditor({ ingredients, onChange }: { ingredients: IngredientForm[]; onChange: (i: IngredientForm[]) => void }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h4 className="font-body text-sm font-medium text-foreground">Ingredients (per person ratio)</h4>
+        <button type="button" onClick={() => onChange([...ingredients, { ...emptyIngredient }])} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
+          <Plus size={12} /> Add
+        </button>
+      </div>
+      {ingredients.map((ing, i) => (
+        <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center bg-muted/50 rounded-lg p-2">
+          <input placeholder="Name (EN)" value={ing.nameEn} onChange={e => { const a = [...ingredients]; a[i] = { ...a[i], nameEn: e.target.value }; onChange(a); }} className={inputClass} />
+          <input placeholder="Name (KN)" value={ing.nameKn} onChange={e => { const a = [...ingredients]; a[i] = { ...a[i], nameKn: e.target.value }; onChange(a); }} className={inputClass} />
+          <input type="number" min={0.001} step={0.01} placeholder="Ratio (kg)" value={ing.ratio} onChange={e => { const a = [...ingredients]; a[i] = { ...a[i], ratio: Number(e.target.value) }; onChange(a); }} className={inputClass} />
+          <div className="flex items-center gap-1">
+            <select value={ing.unit} onChange={e => { const a = [...ingredients]; a[i] = { ...a[i], unit: e.target.value as 'kg' | 'cups' }; onChange(a); }} className={inputClass}>
+              <option value="kg">kg</option>
+              <option value="cups">cups (200ml)</option>
+            </select>
+            {ingredients.length > 1 && (
+              <button type="button" onClick={() => onChange(ingredients.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const { user, logout, isAdmin } = useAuth();
@@ -67,6 +134,7 @@ export default function AdminDashboard() {
 
   const [dishForm, setDishForm] = useState<DishForm>(emptyDishForm);
   const [placeForm, setPlaceForm] = useState({ name: '', location: '', type: '' });
+  const [expandedAcc, setExpandedAcc] = useState<number | null>(null);
 
   if (!user || !isAdmin) {
     return (
@@ -97,12 +165,24 @@ export default function AdminDashboard() {
       description: { en: dishForm.description || dishForm.name, kn: dishForm.descriptionKn || dishForm.nameKn || dishForm.name },
       steps: dishForm.steps.filter(s => s.instructionEn).map(s => ({
         instruction: { en: s.instructionEn, kn: s.instructionKn || s.instructionEn },
-        timeMinutes: s.timeMinutes || 5,
+        timeMinutes: s.timeMinutes || 0,
       })),
       ingredients: dishForm.ingredients.filter(ing => ing.nameEn).map(ing => ({
         name: { en: ing.nameEn, kn: ing.nameKn || ing.nameEn },
         ratio: ing.ratio,
         unit: ing.unit,
+      })),
+      accompaniments: dishForm.accompaniments.filter(a => a.nameEn).map(a => ({
+        name: { en: a.nameEn, kn: a.nameKn || a.nameEn },
+        steps: a.steps.filter(s => s.instructionEn).map(s => ({
+          instruction: { en: s.instructionEn, kn: s.instructionKn || s.instructionEn },
+          timeMinutes: s.timeMinutes || 0,
+        })),
+        ingredients: a.ingredients.filter(ing => ing.nameEn).map(ing => ({
+          name: { en: ing.nameEn, kn: ing.nameKn || ing.nameEn },
+          ratio: ing.ratio,
+          unit: ing.unit,
+        })),
       })),
     };
     addRecipe(newRecipe);
@@ -125,13 +205,18 @@ export default function AdminDashboard() {
 
   const deletePlace = (id: string) => setPlaces(prev => prev.filter(p => p.id !== id));
 
+  const updateAccompaniment = (idx: number, updates: Partial<AccompanimentForm>) => {
+    setDishForm(p => ({
+      ...p,
+      accompaniments: p.accompaniments.map((a, i) => i === idx ? { ...a, ...updates } : a),
+    }));
+  };
+
   const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
     { key: 'dishes', label: 'Dishes', icon: UtensilsCrossed },
     { key: 'places', label: 'Places', icon: MapPin },
     { key: 'users', label: 'Users', icon: Users },
   ];
-
-  const inputClass = "px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body text-sm";
 
   return (
     <div className="min-h-screen bg-background">
@@ -169,8 +254,10 @@ export default function AdminDashboard() {
             </div>
 
             {showDishForm && (
-              <div className="bg-card border border-border rounded-xl p-4 space-y-4">
+              <div className="bg-card border border-border rounded-xl p-4 space-y-5">
                 <h3 className="font-heading font-semibold text-foreground">Add New Dish</h3>
+
+                {/* Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input placeholder="Dish name (English)" value={dishForm.name} onChange={e => setDishForm(p => ({ ...p, name: e.target.value }))} className={inputClass} />
                   <input placeholder="Dish name (Kannada)" value={dishForm.nameKn} onChange={e => setDishForm(p => ({ ...p, nameKn: e.target.value }))} className={inputClass} />
@@ -191,65 +278,46 @@ export default function AdminDashboard() {
                   <input placeholder="Description (Kannada)" value={dishForm.descriptionKn} onChange={e => setDishForm(p => ({ ...p, descriptionKn: e.target.value }))} className={inputClass} />
                 </div>
 
-                {/* Ingredients Section */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-body text-sm font-medium text-foreground">Ingredient Ratios per person (e.g. Rice 0.5kg : Dal 0.2kg : Water 2 cups per person)</h4>
-                    <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: [...p.ingredients, { ...emptyIngredient }] }))} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
-                      <Plus size={12} /> Add Ingredient
-                    </button>
-                  </div>
-                  {dishForm.ingredients.map((ing, i) => (
-                    <div key={i} className="bg-muted/50 rounded-lg p-3 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground">Ingredient {i + 1}</span>
-                        {dishForm.ingredients.length > 1 && (
-                          <button type="button" onClick={() => setDishForm(p => ({ ...p, ingredients: p.ingredients.filter((_, j) => j !== i) }))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input placeholder="Name (EN)" value={ing.nameEn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameEn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass} />
-                        <input placeholder="Name (KN)" value={ing.nameKn} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], nameKn: e.target.value }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass} />
-                        <div className="flex items-center gap-2">
-                          <input type="number" min={0.1} step={0.1} placeholder="Ratio" value={ing.ratio} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], ratio: Number(e.target.value) }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={`${inputClass} flex-1`} />
-                        </div>
-                        <select value={ing.unit} onChange={e => { const ings = [...dishForm.ingredients]; ings[i] = { ...ings[i], unit: e.target.value as 'kg' | 'cups' }; setDishForm(p => ({ ...p, ingredients: ings })); }} className={inputClass}>
-                          <option value="kg">kg</option>
-                          <option value="cups">cups (200ml)</option>
-                        </select>
-                      </div>
-                    </div>
-                  ))}
+                {/* Main Dish Ingredients */}
+                <div className="border border-border rounded-lg p-3 space-y-3">
+                  <h4 className="font-heading text-sm font-bold text-foreground">🍳 Main Dish</h4>
+                  <IngredientsEditor ingredients={dishForm.ingredients} onChange={ings => setDishForm(p => ({ ...p, ingredients: ings }))} />
+                  <StepsEditor steps={dishForm.steps} onChange={steps => setDishForm(p => ({ ...p, steps }))} />
                 </div>
 
-                {/* Steps Section */}
-                <div className="space-y-2">
+                {/* Accompaniments */}
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-body text-sm font-medium text-foreground">Recipe Steps</h4>
-                    <button type="button" onClick={() => setDishForm(p => ({ ...p, steps: [...p.steps, { ...emptyStep }] }))} className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground hover:text-foreground font-body flex items-center gap-1">
-                      <Plus size={12} /> Add Step
+                    <h4 className="font-heading text-sm font-bold text-foreground">🥗 Accompanying Dishes (Chutney, Sambar, etc.)</h4>
+                    <button type="button" onClick={() => setDishForm(p => ({ ...p, accompaniments: [...p.accompaniments, { ...emptyAccompaniment, steps: [{ ...emptyStep }], ingredients: [{ ...emptyIngredient }] }] }))} className="text-xs px-3 py-1 rounded bg-secondary/20 text-secondary-foreground hover:bg-secondary/30 font-body flex items-center gap-1">
+                      <Plus size={12} /> Add Accompaniment
                     </button>
                   </div>
-                  {dishForm.steps.map((step, i) => (
-                    <div key={i} className="flex gap-2 items-start bg-muted/50 rounded-lg p-2">
-                      <span className="text-xs font-medium text-muted-foreground mt-2 min-w-[24px]">{i + 1}.</span>
-                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <input placeholder={`Step ${i + 1} (English)`} value={step.instructionEn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionEn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className={inputClass} />
-                        <input placeholder={`Step ${i + 1} (Kannada)`} value={step.instructionKn} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], instructionKn: e.target.value }; setDishForm(p => ({ ...p, steps })); }} className={inputClass} />
+                  {dishForm.accompaniments.map((acc, idx) => (
+                    <div key={idx} className="border border-border rounded-lg p-3 space-y-3 bg-muted/20">
+                      <div className="flex items-center justify-between">
+                        <button type="button" onClick={() => setExpandedAcc(expandedAcc === idx ? null : idx)} className="flex items-center gap-2 font-body text-sm font-medium text-foreground">
+                          {expandedAcc === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          {acc.nameEn || `Accompaniment ${idx + 1}`}
+                        </button>
+                        <button type="button" onClick={() => setDishForm(p => ({ ...p, accompaniments: p.accompaniments.filter((_, i) => i !== idx) }))} className="text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <input type="number" min={1} placeholder="Min" value={step.timeMinutes} onChange={e => { const steps = [...dishForm.steps]; steps[i] = { ...steps[i], timeMinutes: Number(e.target.value) }; setDishForm(p => ({ ...p, steps })); }} className={`${inputClass} w-16 text-center`} />
-                        <span className="text-xs text-muted-foreground">min</span>
-                      </div>
-                      {dishForm.steps.length > 1 && (
-                        <button type="button" onClick={() => setDishForm(p => ({ ...p, steps: p.steps.filter((_, j) => j !== i) }))} className="mt-1 text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>
+                      {expandedAcc === idx && (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <input placeholder="Name (English)" value={acc.nameEn} onChange={e => updateAccompaniment(idx, { nameEn: e.target.value })} className={inputClass} />
+                            <input placeholder="Name (Kannada)" value={acc.nameKn} onChange={e => updateAccompaniment(idx, { nameKn: e.target.value })} className={inputClass} />
+                          </div>
+                          <IngredientsEditor ingredients={acc.ingredients} onChange={ings => updateAccompaniment(idx, { ingredients: ings })} />
+                          <StepsEditor steps={acc.steps} onChange={steps => updateAccompaniment(idx, { steps })} />
+                        </div>
                       )}
                     </div>
                   ))}
                 </div>
 
                 <div className="flex gap-2">
-                  <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save</button>
+                  <button onClick={handleAddDish} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-body">Save Dish</button>
                   <button onClick={() => setShowDishForm(false)} className="px-4 py-2 border border-border rounded-lg text-sm font-body text-muted-foreground">Cancel</button>
                 </div>
               </div>
