@@ -27,7 +27,7 @@
     <!-- Google Verification -->
     <meta name="google-site-verification" content="EIcEfJd9OccwzStRuroZw7RHQWPNsS5X3Pl0z2RvJZs" />
 
-    <!-- Structured Data -->
+    <!-- Structured Data 
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -37,7 +37,28 @@
       "description": "Karnataka Culinary is a platform for authentic Karnataka recipes, food history, and cultural dishes from Karnataka.",
       "inLanguage": ["en", "kn"]
     }
-    </script>
+    </script>-->
+
+    <!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Karnataka Culinary",
+  "alternateName": "Karnataka Culinary - Authentic Recipes",
+  "url": "https://karnatakaculinary.vercel.app/",
+  "description": "Karnataka Culinary is a platform for authentic Karnataka recipes, food history, and cultural dishes from Karnataka.",
+  "inLanguage": ["en", "kn"],
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://karnatakaculinary.vercel.app/recipes?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
   </head>
 
   <body>
